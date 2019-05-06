@@ -2,5 +2,5 @@
 export * from './apis/index';
 export * from './data_models/index';
 
-export * from './imanagement_api';
+export * from './iprocess_engine_admin_client';
 export * from './rest_settings';

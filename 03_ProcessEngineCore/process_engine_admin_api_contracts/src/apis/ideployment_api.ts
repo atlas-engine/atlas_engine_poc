@@ -1,6 +1,5 @@
-import {ImportProcessDefinitionsRequestPayload} from './data_model';
-
 import {IIdentity} from '@essential-projects/iam_contracts';
+import {ImportProcessDefinitionsRequestPayload} from '../data_models/deployment/index';
 
 /**
  * Manages the deployment of ProcessDefinitions.
