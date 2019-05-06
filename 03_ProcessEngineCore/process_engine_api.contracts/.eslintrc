@@ -1,0 +1,7 @@
+{
+  "extends": "5minds-typescript/fast",
+  "rules": {
+    "@typescript-eslint/no-use-before-define": ["off"],
+    "@typescript-eslint/no-explicit-any": ["warning"]
+  }
+}
