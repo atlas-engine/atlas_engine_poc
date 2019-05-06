@@ -10,7 +10,7 @@ import {
 } from '@process-engine/consumer_api_contracts';
 
 export class ProcessEngineHttpClient implements IConsumerApiAccessor, IConsumerSocketIoAccessor {
-  private baseUrl: string = 'api/consumer/v1';
+  private baseUrl: string = 'api/process-engine/v1';
 
   private _httpClient: IHttpClient = undefined;
 
