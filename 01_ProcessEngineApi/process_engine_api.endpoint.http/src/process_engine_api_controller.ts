@@ -1,39 +1,40 @@
 import {HttpRequestWithIdentity} from '@essential-projects/http_contracts';
 import {IIdentity} from '@essential-projects/iam_contracts';
 
-import {APIs, DataModels, IConsumerApiHttpController} from '@process-engine/process_engine_api.contracts';
+import {APIs, DataModels} from '@process-engine/process_engine_api.contracts';
 
 import {Response} from 'express';
 
 export class ProcessEngineApiController {
-  public config: any = undefined;
 
   private httpCodeSuccessfulResponse: number = 200;
   private httpCodeSuccessfulNoContentResponse: number = 204;
 
-  private _processModelApiService: APIs.IProcessModelApi;
-  private _userTaskApiService: APIs.IUserTaskApi;
+  private processModelApiService: APIs.IProcessModelApi;
+  private userTaskApiService: APIs.IUserTaskApi;
 
   constructor(processModelApiService: APIs.IProcessModelApi, userTaskApiService: APIs.IUserTaskApi) {
-    this._processModelApiService = processModelApiService;
-    this._userTaskApiService = userTaskApiService;
+    this.processModelApiService = processModelApiService;
+    this.userTaskApiService = userTaskApiService;
   }
 
   public async getProcessModels(request: HttpRequestWithIdentity, response: Response): Promise<void> {
     const identity: IIdentity = request.identity;
 
-    const result: DataModels.ProcessModels.ProcessModelList = await this._processModelApiService.getProcessModels(identity);
+    const result: DataModels.ProcessModels.ProcessModelList = await this.processModelApiService.getProcessModels(identity);
 
-    response.status(this.httpCodeSuccessfulResponse).json(result);
+    response.status(this.httpCodeSuccessfulResponse)
+      .json(result);
   }
 
   public async getProcessModelById(request: HttpRequestWithIdentity, response: Response): Promise<void> {
     const processModelId: string = request.params.process_model_id;
     const identity: IIdentity = request.identity;
 
-    const result: DataModels.ProcessModels.ProcessModel = await this._processModelApiService.getProcessModelById(identity, processModelId);
+    const result: DataModels.ProcessModels.ProcessModel = await this.processModelApiService.getProcessModelById(identity, processModelId);
 
-    response.status(this.httpCodeSuccessfulResponse).json(result);
+    response.status(this.httpCodeSuccessfulResponse)
+      .json(result);
   }
 
   public async startProcessInstance(request: HttpRequestWithIdentity, response: Response): Promise<void> {
@@ -51,20 +52,21 @@ export class ProcessEngineApiController {
     const identity: IIdentity = request.identity;
 
     const result: DataModels.ProcessModels.ProcessStartResponsePayload =
-      await this._processModelApiService.startProcessInstance(identity, processModelId, payload, startCallbackType, startEventId, endEventId);
+      await this.processModelApiService.startProcessInstance(identity, processModelId, payload, startCallbackType, startEventId, endEventId);
 
-    response.status(this.httpCodeSuccessfulResponse).json(result);
+    response.status(this.httpCodeSuccessfulResponse)
+      .json(result);
   }
 
   // user-task-routes
-
   public async getUserTasksForCorrelation(request: HttpRequestWithIdentity, response: Response): Promise<void> {
     const correlationId: string = request.params.correlation_id;
     const identity: IIdentity = request.identity;
 
-    const result: DataModels.UserTasks.UserTaskList = await this._userTaskApiService.getUserTasksForCorrelation(identity, correlationId);
+    const result: DataModels.UserTasks.UserTaskList = await this.userTaskApiService.getUserTasksForCorrelation(identity, correlationId);
 
-    response.status(this.httpCodeSuccessfulResponse).json(result);
+    response.status(this.httpCodeSuccessfulResponse)
+      .json(result);
   }
 
   public async finishUserTask(request: HttpRequestWithIdentity, response: Response): Promise<void> {
@@ -74,8 +76,10 @@ export class ProcessEngineApiController {
     const userTaskInstanceId: string = request.params.user_task_instance_id;
     const userTaskResult: DataModels.UserTasks.UserTaskResult = request.body;
 
-    await this._userTaskApiService.finishUserTask(identity, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
+    await this.userTaskApiService.finishUserTask(identity, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
 
-    response.status(this.httpCodeSuccessfulNoContentResponse).send();
+    response.status(this.httpCodeSuccessfulNoContentResponse)
+      .send();
   }
+
 }

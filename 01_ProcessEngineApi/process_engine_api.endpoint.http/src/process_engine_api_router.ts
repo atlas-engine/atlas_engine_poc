@@ -1,50 +1,51 @@
+import {wrap} from 'async-middleware';
+
 import {BaseRouter} from '@essential-projects/http_node';
 import {IIdentityService} from '@essential-projects/iam_contracts';
 
 import {restSettings} from '@process-engine/process_engine_api.contracts';
 import {ProcessEngineApiController} from './process_engine_api_controller';
-import {createResolveIdentityMiddleware, MiddlewareFunction} from './middlewares/index';
-
-import {wrap} from 'async-middleware';
+import {MiddlewareFunction, createResolveIdentityMiddleware} from './middlewares/index';
 
 export class ProcessEngineApiRouter extends BaseRouter {
 
-  private _processEngineApiRestController: ProcessEngineApiController;
-  private _identityService: IIdentityService;
+  private processEngineApiController: ProcessEngineApiController;
+  private identityService: IIdentityService;
 
-  constructor(processEngineApiRestController: ProcessEngineApiController, identityService: IIdentityService) {
+  constructor(processEngineApiController: ProcessEngineApiController, identityService: IIdentityService) {
     super();
-    this._processEngineApiRestController = processEngineApiRestController;
-    this._identityService = identityService;
+    this.processEngineApiController = processEngineApiController;
+    this.identityService = identityService;
   }
 
   public get baseRoute(): string {
     return 'api/process-engine/v1';
   }
 
-  public async initializeRouter(): Promise<void> {
-    this._registerMiddlewares();
-    this._registerProcessModelRoutes();
-    this._registerUserTaskRoutes();
+  public initializeRouter(): void {
+    this.registerMiddlewares();
+    this.registerProcessModelRoutes();
+    this.registerUserTaskRoutes();
   }
 
-  private _registerMiddlewares(): void {
-    const resolveIdentity: MiddlewareFunction = createResolveIdentityMiddleware(this._identityService);
+  private registerMiddlewares(): void {
+    const resolveIdentity: MiddlewareFunction = createResolveIdentityMiddleware(this.identityService);
     this.router.use(wrap(resolveIdentity));
   }
 
-  private _registerProcessModelRoutes(): void {
-    const controller: ProcessEngineApiController = this._processEngineApiRestController;
+  private registerProcessModelRoutes(): void {
+    const controller: ProcessEngineApiController = this.processEngineApiController;
 
     this.router.get(restSettings.paths.processModels, wrap(controller.getProcessModels.bind(controller)));
     this.router.get(restSettings.paths.processModelById, wrap(controller.getProcessModelById.bind(controller)));
     this.router.post(restSettings.paths.startProcessInstance, wrap(controller.startProcessInstance.bind(controller)));
   }
 
-  private _registerUserTaskRoutes(): void {
-    const controller: ProcessEngineApiController = this._processEngineApiRestController;
+  private registerUserTaskRoutes(): void {
+    const controller: ProcessEngineApiController = this.processEngineApiController;
 
     this.router.get(restSettings.paths.correlationUserTasks, wrap(controller.getUserTasksForCorrelation.bind(controller)));
     this.router.post(restSettings.paths.finishUserTask, wrap(controller.finishUserTask.bind(controller)));
   }
+
 }
