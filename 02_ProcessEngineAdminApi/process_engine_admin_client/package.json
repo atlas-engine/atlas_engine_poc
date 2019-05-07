@@ -44,7 +44,8 @@
     "build-commonjs": "tsc",
     "build-amd": "tsc --module amd --outDir ./dist/amd",
     "prepare": "npm run build",
-    "lint": "eslint --fix src/**/*.ts",
+    "lint": "eslint src/**/*.ts",
+    "lint-fix": "eslint --fix src/**/*.ts",
     "test": ":"
   }
 }
