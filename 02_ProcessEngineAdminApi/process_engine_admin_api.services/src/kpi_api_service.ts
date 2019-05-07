@@ -1,6 +1,11 @@
 import * as moment from 'moment';
 
-import {FlowNodeInstance, FlowNodeInstanceState, IFlowNodeInstanceRepository, ProcessToken} from '@process-engine/flow_node_instance.contracts';
+import {
+  FlowNodeInstance,
+  FlowNodeInstanceState,
+  IFlowNodeInstanceRepository,
+  ProcessToken,
+} from '@process-engine/flow_node_instance.contracts';
 import {ActiveToken, FlowNodeRuntimeInformation, IKpiApi} from '@process-engine/kpi_api_contracts';
 import {IMetricsRepository, Metric, MetricMeasurementPoint} from '@process-engine/metrics_api_contracts';
 
@@ -12,7 +17,7 @@ import {IIAMService, IIdentity} from '@essential-projects/iam_contracts';
  * Only use internally.
  */
 type FlowNodeGroups = {
-  [flowNodeId: string]: Array<Metric>,
+  [flowNodeId: string]: Array<Metric>;
 };
 
 /**
@@ -21,7 +26,7 @@ type FlowNodeGroups = {
  * Only use internally.
  */
 type FlowNodeInstanceGroups = {
-  [flowNodeInstanceId: string]: Array<Metric>,
+  [flowNodeInstanceId: string]: Array<Metric>;
 };
 
 /**
@@ -30,52 +35,54 @@ type FlowNodeInstanceGroups = {
  * Only use internally.
  */
 type QuartileInfos = {
-  firstQuartile: number,
-  median: number,
-  thirdQuartile: number,
+  firstQuartile: number;
+  median: number;
+  thirdQuartile: number;
 };
 
 export class KpiApiService implements IKpiApi {
 
-  private _iamService: IIAMService;
-  private _flowNodeInstanceRepository: IFlowNodeInstanceRepository;
-  private _metricsRepository: IMetricsRepository;
+  private iamService: IIAMService;
+  private flowNodeInstanceRepository: IFlowNodeInstanceRepository;
+  private metricsRepository: IMetricsRepository;
 
   constructor(
     flowNodeInstanceRepository: IFlowNodeInstanceRepository,
     iamService: IIAMService,
     metricsRepository: IMetricsRepository,
   ) {
-    this._flowNodeInstanceRepository = flowNodeInstanceRepository;
-    this._iamService = iamService;
-    this._metricsRepository = metricsRepository;
+    this.flowNodeInstanceRepository = flowNodeInstanceRepository;
+    this.iamService = iamService;
+    this.metricsRepository = metricsRepository;
   }
 
   public async getRuntimeInformationForProcessModel(identity: IIdentity, processModelId: string): Promise<Array<FlowNodeRuntimeInformation>> {
 
-    const metrics: Array<Metric> = await this._metricsRepository.readMetricsForProcessModel(processModelId);
+    const metrics: Array<Metric> = await this.metricsRepository.readMetricsForProcessModel(processModelId);
 
     // Do not include FlowNode instances which are still being executed,
     // since they do net yet have a final runtime.
-    const filteredMetrics: Array<Metric> = metrics.filter(this._metricBelongsToFinishedFlowNodeInstance);
+    const filteredMetrics: Array<Metric> = metrics.filter(this.metricBelongsToFinishedFlowNodeInstance);
 
-    const metricsGroupedByFlowNodeId: FlowNodeGroups = this._groupFlowNodeInstancesByFlowNodeId(filteredMetrics);
+    const metricsGroupedByFlowNodeId: FlowNodeGroups = this.groupFlowNodeInstancesByFlowNodeId(filteredMetrics);
 
     const groupKeys: Array<string> = Object.keys(metricsGroupedByFlowNodeId);
 
     const runtimeInformations: Array<FlowNodeRuntimeInformation> =
       groupKeys.map((flowNodeId: string): FlowNodeRuntimeInformation => {
-        return this._createFlowNodeRuntimeInformation(processModelId, flowNodeId, metricsGroupedByFlowNodeId[flowNodeId]);
+        return this.createFlowNodeRuntimeInformation(processModelId, flowNodeId, metricsGroupedByFlowNodeId[flowNodeId]);
       });
 
     return Promise.resolve(runtimeInformations);
   }
 
-  public async getRuntimeInformationForFlowNode(identity: IIdentity,
-                                                processModelId: string,
-                                                flowNodeId: string): Promise<FlowNodeRuntimeInformation> {
+  public async getRuntimeInformationForFlowNode(
+    identity: IIdentity,
+    processModelId: string,
+    flowNodeId: string,
+  ): Promise<FlowNodeRuntimeInformation> {
 
-    const metrics: Array<Metric> = await this._metricsRepository.readMetricsForProcessModel(processModelId);
+    const metrics: Array<Metric> = await this.metricsRepository.readMetricsForProcessModel(processModelId);
 
     const flowNodeMetrics: Array<Metric> = metrics.filter((entry: Metric): boolean => {
       return entry.flowNodeId === flowNodeId;
@@ -83,55 +90,59 @@ export class KpiApiService implements IKpiApi {
 
     // Do not include FlowNode instances which are still being executed,
     // since they do net yet have a final runtime.
-    const filteredMetrics: Array<Metric> = flowNodeMetrics.filter(this._metricBelongsToFinishedFlowNodeInstance);
+    const filteredMetrics: Array<Metric> = flowNodeMetrics.filter(this.metricBelongsToFinishedFlowNodeInstance);
 
     const flowNodeRuntimeInformation: FlowNodeRuntimeInformation =
-      this._createFlowNodeRuntimeInformation(processModelId, flowNodeId, filteredMetrics);
+      this.createFlowNodeRuntimeInformation(processModelId, flowNodeId, filteredMetrics);
 
     return flowNodeRuntimeInformation;
   }
 
   public async getActiveTokensForProcessModel(identity: IIdentity, processModelId: string): Promise<Array<ActiveToken>> {
 
-    const flowNodeInstances: Array<FlowNodeInstance> = await this._flowNodeInstanceRepository.queryByProcessModel(processModelId);
+    const flowNodeInstances: Array<FlowNodeInstance> = await this.flowNodeInstanceRepository.queryByProcessModel(processModelId);
 
-    const activeFlowNodeInstances: Array<FlowNodeInstance> = flowNodeInstances.filter(this._isFlowNodeInstanceActive);
+    const activeFlowNodeInstances: Array<FlowNodeInstance> = flowNodeInstances.filter(this.isFlowNodeInstanceActive);
 
-    const activeTokenInfos: Array<ActiveToken> = activeFlowNodeInstances.map(this._createActiveTokenInfoForFlowNodeInstance);
-
-    return activeTokenInfos;
-  }
-
-  public async getActiveTokensForCorrelationAndProcessModel(identity: IIdentity,
-                                                            correlationId: string,
-                                                            processModelId: string): Promise<Array<ActiveToken>> {
-
-    const activeFlowNodeInstances: Array<FlowNodeInstance> =
-      await this._flowNodeInstanceRepository.queryActiveByCorrelationAndProcessModel(correlationId, processModelId);
-
-    const activeTokenInfos: Array<ActiveToken> = activeFlowNodeInstances.map(this._createActiveTokenInfoForFlowNodeInstance);
+    const activeTokenInfos: Array<ActiveToken> = activeFlowNodeInstances.map(this.createActiveTokenInfoForFlowNodeInstance);
 
     return activeTokenInfos;
   }
 
-  public async getActiveTokensForProcessInstance(identity: IIdentity,
-                                                 processInstanceId: string): Promise<Array<ActiveToken>> {
+  public async getActiveTokensForCorrelationAndProcessModel(
+    identity: IIdentity,
+    correlationId: string,
+    processModelId: string,
+  ): Promise<Array<ActiveToken>> {
 
     const activeFlowNodeInstances: Array<FlowNodeInstance> =
-      await this._flowNodeInstanceRepository.queryActiveByProcessInstance(processInstanceId);
+      await this.flowNodeInstanceRepository.queryActiveByCorrelationAndProcessModel(correlationId, processModelId);
 
-    const activeTokenInfos: Array<ActiveToken> = activeFlowNodeInstances.map(this._createActiveTokenInfoForFlowNodeInstance);
+    const activeTokenInfos: Array<ActiveToken> = activeFlowNodeInstances.map(this.createActiveTokenInfoForFlowNodeInstance);
+
+    return activeTokenInfos;
+  }
+
+  public async getActiveTokensForProcessInstance(
+    identity: IIdentity,
+    processInstanceId: string,
+  ): Promise<Array<ActiveToken>> {
+
+    const activeFlowNodeInstances: Array<FlowNodeInstance> =
+      await this.flowNodeInstanceRepository.queryActiveByProcessInstance(processInstanceId);
+
+    const activeTokenInfos: Array<ActiveToken> = activeFlowNodeInstances.map(this.createActiveTokenInfoForFlowNodeInstance);
 
     return activeTokenInfos;
   }
 
   public async getActiveTokensForFlowNode(identity: IIdentity, flowNodeId: string): Promise<Array<ActiveToken>> {
 
-    const flowNodeInstances: Array<FlowNodeInstance> = await this._flowNodeInstanceRepository.queryByFlowNodeId(flowNodeId);
+    const flowNodeInstances: Array<FlowNodeInstance> = await this.flowNodeInstanceRepository.queryByFlowNodeId(flowNodeId);
 
-    const activeFlowNodeInstances: Array<FlowNodeInstance> = flowNodeInstances.filter(this._isFlowNodeInstanceActive);
+    const activeFlowNodeInstances: Array<FlowNodeInstance> = flowNodeInstances.filter(this.isFlowNodeInstanceActive);
 
-    const activeTokenInfos: Array<ActiveToken> = activeFlowNodeInstances.map(this._createActiveTokenInfoForFlowNodeInstance);
+    const activeTokenInfos: Array<ActiveToken> = activeFlowNodeInstances.map(this.createActiveTokenInfoForFlowNodeInstance);
 
     return activeTokenInfos;
   }
@@ -159,7 +170,7 @@ export class KpiApiService implements IKpiApi {
    * @returns                    True, if the metric belongs to a finished
    *                             FlowNodeInstance, otherwise false.
    */
-  private _metricBelongsToFinishedFlowNodeInstance(metricToCheck: Metric, metricIndex: number, allFlowNodeMetrics: Array<Metric>): boolean {
+  private metricBelongsToFinishedFlowNodeInstance(metricToCheck: Metric, metricIndex: number, allFlowNodeMetrics: Array<Metric>): boolean {
 
     const metricDoesNotBelongToAFlowNodeInstance: boolean = !metricToCheck.flowNodeInstanceId || !metricToCheck.flowNodeId;
 
@@ -191,7 +202,7 @@ export class KpiApiService implements IKpiApi {
    * @param   metrics The metrics to group.
    * @returns         The grouped metrics.
    */
-  private _groupFlowNodeInstancesByFlowNodeId(metrics: Array<Metric>): FlowNodeGroups {
+  private groupFlowNodeInstancesByFlowNodeId(metrics: Array<Metric>): FlowNodeGroups {
 
     const groupedMetrics: FlowNodeGroups = {};
 
@@ -219,24 +230,24 @@ export class KpiApiService implements IKpiApi {
    * @param   metrics        The list of instances to evaluate.
    * @returns                The FlowNodeRuntimeInformation for the FlowNode.
    */
-  private _createFlowNodeRuntimeInformation(processModelId: string, flowNodeId: string, metrics: Array<Metric>): FlowNodeRuntimeInformation {
+  private createFlowNodeRuntimeInformation(processModelId: string, flowNodeId: string, metrics: Array<Metric>): FlowNodeRuntimeInformation {
 
-    const groupedMetrics: FlowNodeInstanceGroups = this._groupMetricsByFlowNodeInstance(metrics);
+    const groupedMetrics: FlowNodeInstanceGroups = this.groupMetricsByFlowNodeInstance(metrics);
 
     const flowNodeInstanceId: Array<string> = Object.keys(groupedMetrics);
 
     const runtimes: Array<number> = flowNodeInstanceId.map((flowNodeInstanceKey: string): number => {
-      return this._calculateRuntimeForFlowNodeInstance(groupedMetrics[flowNodeInstanceKey]);
+      return this.calculateRuntimeForFlowNodeInstance(groupedMetrics[flowNodeInstanceKey]);
     });
 
-    const quartileInfos: QuartileInfos = this._calculateQuartiles(runtimes);
+    const quartileInfos: QuartileInfos = this.calculateQuartiles(runtimes);
 
     const runtimeInformation: FlowNodeRuntimeInformation = new FlowNodeRuntimeInformation();
     runtimeInformation.flowNodeId = flowNodeId;
     runtimeInformation.processModelId = processModelId;
     runtimeInformation.minRuntimeInMs = Math.min(...runtimes);
     runtimeInformation.maxRuntimeInMs = Math.max(...runtimes);
-    runtimeInformation.arithmeticMeanRuntimeInMs = this._calculateFlowNodeArithmeticMeanRuntime(runtimes);
+    runtimeInformation.arithmeticMeanRuntimeInMs = this.calculateFlowNodeArithmeticMeanRuntime(runtimes);
     runtimeInformation.firstQuartileRuntimeInMs = quartileInfos.firstQuartile;
     runtimeInformation.medianRuntimeInMs = quartileInfos.median;
     runtimeInformation.thirdQuartileRuntimeInMs = quartileInfos.thirdQuartile;
@@ -249,7 +260,7 @@ export class KpiApiService implements IKpiApi {
    *
    * @param metrics
    */
-  private _groupMetricsByFlowNodeInstance(metrics: Array<Metric>): FlowNodeInstanceGroups {
+  private groupMetricsByFlowNodeInstance(metrics: Array<Metric>): FlowNodeInstanceGroups {
 
     const groupedMetrics: FlowNodeInstanceGroups = {};
 
@@ -275,7 +286,7 @@ export class KpiApiService implements IKpiApi {
    *                           runtime
    * @returns                  The calculated runtime.
    */
-  private _calculateRuntimeForFlowNodeInstance(metrics: Array<Metric>): number {
+  private calculateRuntimeForFlowNodeInstance(metrics: Array<Metric>): number {
 
     const onEnterMetric: Metric = metrics.find((token: Metric): boolean => {
       return token.metricType === MetricMeasurementPoint.onFlowNodeEnter;
@@ -303,7 +314,7 @@ export class KpiApiService implements IKpiApi {
    * @param   runtimes The set of runtimes for which to calculate the quartiles.
    * @returns          A set of quartiles.
    */
-  private _calculateQuartiles(runtimes: Array<number>): QuartileInfos {
+  private calculateQuartiles(runtimes: Array<number>): QuartileInfos {
 
     const runtimeAmounts: number = runtimes.length;
 
@@ -338,9 +349,9 @@ export class KpiApiService implements IKpiApi {
       thirdQuartileData = sortedRuntimes;
     }
 
-    const firstQuartileRuntime: number = this._calculateFlowNodeArithmeticMeanRuntime(firstQuartileData);
-    const medianQuartileRuntime: number = this._calculateFlowNodeArithmeticMeanRuntime(medianQuartileData);
-    const thirdQuartileRuntime: number = this._calculateFlowNodeArithmeticMeanRuntime(thirdQuartileData);
+    const firstQuartileRuntime: number = this.calculateFlowNodeArithmeticMeanRuntime(firstQuartileData);
+    const medianQuartileRuntime: number = this.calculateFlowNodeArithmeticMeanRuntime(medianQuartileData);
+    const thirdQuartileRuntime: number = this.calculateFlowNodeArithmeticMeanRuntime(thirdQuartileData);
 
     return {
       firstQuartile: firstQuartileRuntime,
@@ -355,9 +366,9 @@ export class KpiApiService implements IKpiApi {
    * @param   runtimes The set of runtimes.
    * @returns          The calculated mean runtime.
    */
-  private _calculateFlowNodeArithmeticMeanRuntime(runtimes: Array<number>): number {
+  private calculateFlowNodeArithmeticMeanRuntime(runtimes: Array<number>): number {
 
-    const allRuntimes: number = runtimes.reduce((previousValue: number, currentValue: number) => {
+    const allRuntimes: number = runtimes.reduce((previousValue: number, currentValue: number): number => {
       return previousValue + currentValue;
     }, 0);
 
@@ -372,7 +383,7 @@ export class KpiApiService implements IKpiApi {
    * @param   flowNodeInstance The FlowNode for which to determine the state.
    * @returns                  True, if the instance is active, otherwise false.
    */
-  private _isFlowNodeInstanceActive(flowNodeInstance: FlowNodeInstance): boolean {
+  private isFlowNodeInstanceActive(flowNodeInstance: FlowNodeInstance): boolean {
     return flowNodeInstance.state === FlowNodeInstanceState.running
       || flowNodeInstance.state === FlowNodeInstanceState.suspended;
   }
@@ -383,7 +394,7 @@ export class KpiApiService implements IKpiApi {
    * @param   flowNodeInstance The FlowNodeInstance to convert.
    * @returns                  The created ActiveToken.
    */
-  private _createActiveTokenInfoForFlowNodeInstance(flowNodeInstance: FlowNodeInstance): ActiveToken {
+  private createActiveTokenInfoForFlowNodeInstance(flowNodeInstance: FlowNodeInstance): ActiveToken {
 
     const currentProcessToken: ProcessToken = flowNodeInstance.tokens[0];
 
@@ -399,4 +410,5 @@ export class KpiApiService implements IKpiApi {
 
     return activeTokenInfo;
   }
+
 }

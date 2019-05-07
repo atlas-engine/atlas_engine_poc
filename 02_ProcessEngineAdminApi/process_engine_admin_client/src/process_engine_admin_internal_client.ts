@@ -1,23 +1,37 @@
-import {Subscription} from '@essential-projects/event_aggregator_contracts';
 import {IIdentity} from '@essential-projects/iam_contracts';
 
-import {DataModels, IProcessEngineAdminApi} from '@process-engine/management_api_contracts';
+import {APIs, DataModels, IProcessEngineAdminApi} from '@process-engine/process_engine_admin_api.contracts';
 
 export class ProcessEngineAdminInternalClient implements IProcessEngineAdminApi {
 
-  private _managementApiService: IProcessEngineAdminApi = undefined;
+  private deploymentApiService: APIs.IDeploymentApi = undefined;
+  private kpiApiService: APIs.IKpiApi = undefined;
 
-  constructor(managementApiService: IProcessEngineAdminApi) {
-    this._managementApiService = managementApiService;
+  constructor(deploymentApiService: APIs.IDeploymentApi, kpiApiService: APIs.IKpiApi) {
+    this.deploymentApiService = deploymentApiService;
+    this.kpiApiService = kpiApiService;
   }
 
-  // Heatmap related features
+  // Deployment
+  public async importBpmnFromXml(identity: IIdentity, payload: DataModels.Deployment.ImportProcessDefinitionsRequestPayload): Promise<void> {
+    return this.deploymentApiService.importBpmnFromXml(identity, payload);
+  }
+
+  public async importBpmnFromFile(identity: IIdentity, filePath: string, name?: string, overwriteExisting?: boolean): Promise<void> {
+    return this.deploymentApiService.importBpmnFromFile(identity, filePath, name, overwriteExisting);
+  }
+
+  public async undeploy(identity: IIdentity, processModelId: string): Promise<void> {
+    return this.deploymentApiService.undeploy(identity, processModelId);
+  }
+
+  // KPI
   public async getRuntimeInformationForProcessModel(
     identity: IIdentity,
     processModelId: string,
   ): Promise<Array<DataModels.Kpi.FlowNodeRuntimeInformation>> {
 
-    return this._managementApiService.getRuntimeInformationForProcessModel(identity, processModelId);
+    return this.kpiApiService.getRuntimeInformationForProcessModel(identity, processModelId);
   }
 
   public async getRuntimeInformationForFlowNode(
@@ -26,29 +40,36 @@ export class ProcessEngineAdminInternalClient implements IProcessEngineAdminApi 
     flowNodeId: string,
   ): Promise<DataModels.Kpi.FlowNodeRuntimeInformation> {
 
-    return this._managementApiService.getRuntimeInformationForFlowNode(identity, processModelId, flowNodeId);
+    return this.kpiApiService.getRuntimeInformationForFlowNode(identity, processModelId, flowNodeId);
   }
 
-  public async getActiveTokensForProcessModel(identity: IIdentity, processModelId: string): Promise<Array<DataModels.Kpi.ActiveToken>> {
-    return this._managementApiService.getActiveTokensForProcessModel(identity, processModelId);
+  public async getActiveTokensForProcessModel<TPayload>(
+    identity: IIdentity,
+    processModelId: string,
+  ): Promise<Array<DataModels.Kpi.ActiveToken<TPayload>>> {
+    return this.kpiApiService.getActiveTokensForProcessModel(identity, processModelId);
   }
 
-  public async getActiveTokensForCorrelationAndProcessModel(
+  public async getActiveTokensForCorrelationAndProcessModel<TPayload>(
     identity: IIdentity,
     correlationId: string,
     processModelId: string,
-  ): Promise<Array<DataModels.Kpi.ActiveToken>> {
-    return this._managementApiService.getActiveTokensForCorrelationAndProcessModel(identity, correlationId, processModelId);
+  ): Promise<Array<DataModels.Kpi.ActiveToken<TPayload>>> {
+    return this.kpiApiService.getActiveTokensForCorrelationAndProcessModel(identity, correlationId, processModelId);
   }
 
-  public async getActiveTokensForProcessInstance(
+  public async getActiveTokensForProcessInstance<TPayload>(
     identity: IIdentity,
     processInstanceId: string,
-  ): Promise<Array<DataModels.Kpi.ActiveToken>> {
-    return this._managementApiService.getActiveTokensForProcessInstance(identity, processInstanceId);
+  ): Promise<Array<DataModels.Kpi.ActiveToken<TPayload>>> {
+    return this.kpiApiService.getActiveTokensForProcessInstance(identity, processInstanceId);
   }
 
-  public async getActiveTokensForFlowNode(identity: IIdentity, flowNodeId: string): Promise<Array<DataModels.Kpi.ActiveToken>> {
-    return this._managementApiService.getActiveTokensForFlowNode(identity, flowNodeId);
+  public async getActiveTokensForFlowNode<TPayload>(
+    identity: IIdentity,
+    flowNodeId: string,
+  ): Promise<Array<DataModels.Kpi.ActiveToken<TPayload>>> {
+    return this.kpiApiService.getActiveTokensForFlowNode(identity, flowNodeId);
   }
+
 }

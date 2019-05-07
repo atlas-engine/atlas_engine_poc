@@ -1,45 +1,62 @@
 import {BaseRouter} from '@essential-projects/http_node';
 import {IIdentityService} from '@essential-projects/iam_contracts';
 
-import {restSettings} from '@process-engine/management_api_contracts';
-
-import {createResolveIdentityMiddleware, MiddlewareFunction} from './../../middlewares/resolve_identity';
-import {KpiController} from './kpi_controller';
+import {restSettings} from '@process-engine/process_engine_admin_api.contracts';
 
 import {wrap} from 'async-middleware';
+import {MiddlewareFunction, createResolveIdentityMiddleware} from '../../middlewares/resolve_identity';
+import {KpiController} from './kpi_controller';
 
 export class KpiRouter extends BaseRouter {
 
-  private _identityService: IIdentityService;
-  private _kpiController: KpiController;
+  private identityService: IIdentityService;
+  private kpiController: KpiController;
 
   constructor(kpiController: KpiController, identityService: IIdentityService) {
     super();
-    this._kpiController = kpiController;
-    this._identityService = identityService;
+    this.kpiController = kpiController;
+    this.identityService = identityService;
   }
 
   public get baseRoute(): string {
     return 'api/process-engine-admin/v1';
   }
 
-  public async initializeRouter(): Promise<void> {
+  public initializeRouter(): void {
     this.registerMiddlewares();
     this.registerRoutes();
   }
 
   private registerMiddlewares(): void {
-    const resolveIdentity: MiddlewareFunction = createResolveIdentityMiddleware(this._identityService);
+    const resolveIdentity: MiddlewareFunction = createResolveIdentityMiddleware(this.identityService);
     this.router.use(wrap(resolveIdentity));
   }
 
   private registerRoutes(): void {
-    this.router.get(restSettings.paths.getRuntimeInformationForProcessModel, wrap(this._kpiController.getRuntimeInformationForProcessModel.bind(this._kpiController)));
-    this.router.get(restSettings.paths.getActiveTokensForProcessModel, wrap(this._kpiController.getActiveTokensForProcessModel.bind(this._kpiController)));
-    this.router.get(restSettings.paths.getRuntimeInformationForFlowNode, wrap(this._kpiController.getRuntimeInformationForFlowNode.bind(this._kpiController)));
-    this.router.get(restSettings.paths.getActiveTokensForFlowNode, wrap(this._kpiController.getActiveTokensForFlowNode.bind(this._kpiController)));
-    this.router.get(restSettings.paths.getActiveTokensForProcessInstance, wrap(this._kpiController.getActiveTokensForProcessInstance.bind(this._kpiController)));
-    this.router.get(restSettings.paths.getActiveTokensForCorrelationAndProcessModel,
-        wrap(this._kpiController.getActiveTokensForCorrelationAndProcessModel.bind(this._kpiController)));
+    this.router.get(
+      restSettings.paths.getRuntimeInformationForProcessModel,
+      wrap(this.kpiController.getRuntimeInformationForProcessModel.bind(this.kpiController)),
+    );
+    this.router.get(
+      restSettings.paths.getActiveTokensForProcessModel,
+      wrap(this.kpiController.getActiveTokensForProcessModel.bind(this.kpiController)),
+    );
+    this.router.get(
+      restSettings.paths.getRuntimeInformationForFlowNode,
+      wrap(this.kpiController.getRuntimeInformationForFlowNode.bind(this.kpiController)),
+    );
+    this.router.get(
+      restSettings.paths.getActiveTokensForFlowNode,
+      wrap(this.kpiController.getActiveTokensForFlowNode.bind(this.kpiController)),
+    );
+    this.router.get(
+      restSettings.paths.getActiveTokensForProcessInstance,
+      wrap(this.kpiController.getActiveTokensForProcessInstance.bind(this.kpiController)),
+    );
+    this.router.get(
+      restSettings.paths.getActiveTokensForCorrelationAndProcessModel,
+      wrap(this.kpiController.getActiveTokensForCorrelationAndProcessModel.bind(this.kpiController)),
+    );
   }
+
 }

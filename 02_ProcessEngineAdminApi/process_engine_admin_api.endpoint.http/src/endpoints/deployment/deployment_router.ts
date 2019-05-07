@@ -1,46 +1,43 @@
 import {BaseRouter} from '@essential-projects/http_node';
 import {IIdentityService} from '@essential-projects/iam_contracts';
 
-import {restSettings} from '@process-engine/deployment_api_contracts';
-
-import {DeploymentApiController} from './deployment_api_controller';
-import {createResolveIdentityMiddleware, MiddlewareFunction} from './middlewares/index';
+import {restSettings} from '@process-engine/process_engine_admin_api.contracts';
 
 import {wrap} from 'async-middleware';
+import {DeploymentController} from './deployment_controller';
 
-export class DeploymentApiRouter extends BaseRouter {
+import {MiddlewareFunction, createResolveIdentityMiddleware} from '../../middlewares/resolve_identity';
 
-  private _deploymentApiController: DeploymentApiController;
-  private _identityService: IIdentityService;
+export class DeploymentRouter extends BaseRouter {
 
-  constructor(deploymentApiController: DeploymentApiController, identityService: IIdentityService) {
+  private deploymentApiController: DeploymentController;
+  private identityService: IIdentityService;
+
+  constructor(deploymentApiController: DeploymentController, identityService: IIdentityService) {
     super();
-    this._deploymentApiController = deploymentApiController;
-    this._identityService = identityService;
-  }
-
-  private get deploymentApiController(): DeploymentApiController {
-    return this._deploymentApiController;
+    this.deploymentApiController = deploymentApiController;
+    this.identityService = identityService;
   }
 
   public get baseRoute(): string {
     return 'api/deployment/v1';
   }
 
-  public async initializeRouter(): Promise<void> {
+  public initializeRouter(): void {
     this.registerMiddlewares();
     this.registerRoutes();
   }
 
   private registerMiddlewares(): void {
-    const resolveIdentity: MiddlewareFunction = createResolveIdentityMiddleware(this._identityService);
+    const resolveIdentity: MiddlewareFunction = createResolveIdentityMiddleware(this.identityService);
     this.router.use(wrap(resolveIdentity));
   }
 
   private registerRoutes(): void {
-    const controller: DeploymentApiController = this.deploymentApiController;
+    const controller: DeploymentController = this.deploymentApiController;
 
     this.router.post(restSettings.paths.importProcessModel, wrap(controller.importProcessModel.bind(controller)));
     this.router.post(restSettings.paths.undeployProcessModel, wrap(controller.undeployProcessModel.bind(controller)));
   }
+
 }

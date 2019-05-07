@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as DeploymentEndpoint from './deployment/index';
 import * as KpiEndpoint from './kpi/index';
 
