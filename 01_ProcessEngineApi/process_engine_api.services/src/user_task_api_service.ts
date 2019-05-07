@@ -28,17 +28,21 @@ export class UserTaskApiService implements APIs.IUserTaskApi {
     this.userTaskConverter = userTaskConverter;
   }
 
-  public async getUserTasksForCorrelation(identity: IIdentity, correlationId: string): Promise<DataModels.UserTasks.UserTaskList> {
+  public async getUserTasksForCorrelation<TTokenPayload>(
+    identity: IIdentity,
+    correlationId: string,
+  ): Promise<Array<DataModels.UserTasks.UserTask<TTokenPayload>>> {
 
     const suspendedFlowNodes: Array<FlowNodeInstance> =
       await this.flowNodeInstanceService.querySuspendedByCorrelation(correlationId);
 
-    const userTaskList: DataModels.UserTasks.UserTaskList = await this.userTaskConverter.convertUserTasks(identity, suspendedFlowNodes);
+    const userTaskList: Array<DataModels.UserTasks.UserTask<TTokenPayload>> =
+      await this.userTaskConverter.convertUserTasks<TTokenPayload>(identity, suspendedFlowNodes);
 
     return userTaskList;
   }
 
-  public async finishUserTask(
+  public async finishUserTask<TTokenPayload>(
     identity: IIdentity,
     processInstanceId: string,
     correlationId: string,
@@ -58,10 +62,10 @@ export class UserTaskApiService implements APIs.IUserTaskApi {
       throw new EssentialProjectErrors.NotFoundError(errorMessage);
     }
 
-    const convertedUserTaskList: DataModels.UserTasks.UserTaskList =
-      await this.userTaskConverter.convertUserTasks(identity, [matchingFlowNodeInstance]);
+    const convertedUserTaskList: Array<DataModels.UserTasks.UserTask<TTokenPayload>> =
+      await this.userTaskConverter.convertUserTasks<TTokenPayload>(identity, [matchingFlowNodeInstance]);
 
-    const matchingUserTask: DataModels.UserTasks.UserTask = convertedUserTaskList.userTasks[0];
+    const matchingUserTask: DataModels.UserTasks.UserTask<TTokenPayload> = convertedUserTaskList[0];
 
     return new Promise<void>((resolve: Function): void => {
 
@@ -114,9 +118,9 @@ export class UserTaskApiService implements APIs.IUserTaskApi {
     return finishedTask.formFields;
   }
 
-  private publishFinishUserTaskEvent(
+  private publishFinishUserTaskEvent<TTokenPayload>(
     identity: IIdentity,
-    userTaskInstance: DataModels.UserTasks.UserTask,
+    userTaskInstance: DataModels.UserTasks.UserTask<TTokenPayload>,
     userTaskResult: any,
   ): void {
 

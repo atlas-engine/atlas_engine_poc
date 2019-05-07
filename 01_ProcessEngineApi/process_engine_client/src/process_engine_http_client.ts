@@ -18,15 +18,15 @@ export class ProcessEngineHttpClient implements IProcessEngineClient {
   }
 
   // Process models and instances
-  public async getProcessModels(identity: IIdentity): Promise<DataModels.ProcessModels.ProcessModelList> {
+  public async getProcessModels(identity: IIdentity): Promise<Array<DataModels.ProcessModels.ProcessModel>> {
     this.ensureIsAuthorized(identity);
 
     const requestAuthHeaders: IRequestOptions = this.createRequestAuthHeaders(identity);
 
     const url: string = this.applyBaseUrl(restSettings.paths.processModels);
 
-    const httpResponse: IResponse<DataModels.ProcessModels.ProcessModelList> =
-      await this.httpClient.get<DataModels.ProcessModels.ProcessModelList>(url, requestAuthHeaders);
+    const httpResponse: IResponse<Array<DataModels.ProcessModels.ProcessModel>> =
+      await this.httpClient.get<Array<DataModels.ProcessModels.ProcessModel>>(url, requestAuthHeaders);
 
     return httpResponse.result;
   }
@@ -45,10 +45,10 @@ export class ProcessEngineHttpClient implements IProcessEngineClient {
     return httpResponse.result;
   }
 
-  public async startProcessInstance(
+  public async startProcessInstance<TInputValues>(
     identity: IIdentity,
     processModelId: string,
-    payload: DataModels.ProcessModels.ProcessStartRequestPayload,
+    payload: DataModels.ProcessModels.ProcessStartRequestPayload<TInputValues>,
     startCallbackType: DataModels.ProcessModels.StartCallbackType,
     startEventId?: string,
     endEventId?: string,
@@ -63,13 +63,17 @@ export class ProcessEngineHttpClient implements IProcessEngineClient {
       await this
         .httpClient
         // eslint-disable-next-line
-        .post<DataModels.ProcessModels.ProcessStartRequestPayload, DataModels.ProcessModels.ProcessStartResponsePayload>(url, payload, requestAuthHeaders);
+        .post<DataModels.ProcessModels.ProcessStartRequestPayload<TInputValues>, DataModels.ProcessModels.ProcessStartResponsePayload>(url, payload, requestAuthHeaders);
 
     return httpResponse.result;
   }
 
   // UserTasks
-  public async getUserTasksForCorrelation(identity: IIdentity, correlationId: string): Promise<DataModels.UserTasks.UserTaskList> {
+  public async getUserTasksForCorrelation<TTokenPayload>(
+    identity: IIdentity,
+    correlationId: string,
+  ): Promise<Array<DataModels.UserTasks.UserTask<TTokenPayload>>> {
+
     this.ensureIsAuthorized(identity);
 
     const requestAuthHeaders: IRequestOptions = this.createRequestAuthHeaders(identity);
@@ -77,8 +81,8 @@ export class ProcessEngineHttpClient implements IProcessEngineClient {
     let url: string = restSettings.paths.correlationUserTasks.replace(restSettings.params.correlationId, correlationId);
     url = this.applyBaseUrl(url);
 
-    const httpResponse: IResponse<DataModels.UserTasks.UserTaskList> =
-      await this.httpClient.get<DataModels.UserTasks.UserTaskList>(url, requestAuthHeaders);
+    const httpResponse: IResponse<Array<DataModels.UserTasks.UserTask<TTokenPayload>>> =
+      await this.httpClient.get<Array<DataModels.UserTasks.UserTask<TTokenPayload>>>(url, requestAuthHeaders);
 
     return httpResponse.result;
   }

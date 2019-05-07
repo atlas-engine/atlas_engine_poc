@@ -27,31 +27,29 @@ export class ProcessModelApiService implements APIs.IProcessModelApi {
     this.processModelConverter = processModelConverter;
   }
 
-  public async getProcessModels(identity: IIdentity): Promise<DataModels.ProcessModels.ProcessModelList> {
+  public async getProcessModels(identity: IIdentity): Promise<Array<DataModels.ProcessModels.ProcessModel>> {
 
     const processModels = await this.processModelUseCase.getProcessModels(identity);
-    const consumerApiProcessModels =
+    const sanitizedProcessModels =
       processModels.map((processModel: Model.Process): DataModels.ProcessModels.ProcessModel => {
         return this.processModelConverter.convertProcessModel(processModel);
       });
 
-    return {
-      processModels: consumerApiProcessModels,
-    };
+    return sanitizedProcessModels;
   }
 
   public async getProcessModelById(identity: IIdentity, processModelId: string): Promise<DataModels.ProcessModels.ProcessModel> {
 
     const processModel = await this.processModelUseCase.getProcessModelById(identity, processModelId);
-    const consumerApiProcessModel = this.processModelConverter.convertProcessModel(processModel);
+    const sanitizedProcessModel = this.processModelConverter.convertProcessModel(processModel);
 
-    return consumerApiProcessModel;
+    return sanitizedProcessModel;
   }
 
-  public async startProcessInstance(
+  public async startProcessInstance<TInputValues>(
     identity: IIdentity,
     processModelId: string,
-    payload: DataModels.ProcessModels.ProcessStartRequestPayload,
+    payload: DataModels.ProcessModels.ProcessStartRequestPayload<TInputValues>,
     startCallbackType?: DataModels.ProcessModels.StartCallbackType,
     startEventId?: string,
     endEventId?: string,
@@ -69,18 +67,25 @@ export class ProcessModelApiService implements APIs.IProcessModelApi {
     const correlationId = payload.correlationId || uuid.v4();
 
     const response: DataModels.ProcessModels.ProcessStartResponsePayload =
-      await this
-        .startProcessInstanceAndReturnResult(identity, correlationId, processModelId, startEventId, payload, startCallbackTypeToUse, endEventId);
+      await this.startProcessInstanceAndReturnResult<TInputValues>(
+        identity,
+        correlationId,
+        processModelId,
+        startEventId,
+        payload,
+        startCallbackTypeToUse,
+        endEventId,
+      );
 
     return response;
   }
 
-  private async startProcessInstanceAndReturnResult(
+  private async startProcessInstanceAndReturnResult<TInputValues>(
     identity: IIdentity,
     correlationId: string,
     processModelId: string,
     startEventId: string,
-    payload: DataModels.ProcessModels.ProcessStartRequestPayload,
+    payload: DataModels.ProcessModels.ProcessStartRequestPayload<TInputValues>,
     startCallbackType: DataModels.ProcessModels.StartCallbackType,
     endEventId?: string,
   ): Promise<DataModels.ProcessModels.ProcessStartResponsePayload> {

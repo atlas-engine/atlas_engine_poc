@@ -14,7 +14,7 @@ export class InternalAccessor implements IProcessEngineClient {
   }
 
   // Process models and instances
-  public async getProcessModels(identity: IIdentity): Promise<DataModels.ProcessModels.ProcessModelList> {
+  public async getProcessModels(identity: IIdentity): Promise<Array<DataModels.ProcessModels.ProcessModel>> {
     this.ensureIsAuthorized(identity);
 
     return this.processModelApiService.getProcessModels(identity);
@@ -26,24 +26,29 @@ export class InternalAccessor implements IProcessEngineClient {
     return this.processModelApiService.getProcessModelById(identity, processModelId);
   }
 
-  public async startProcessInstance(
+  public async startProcessInstance<TInputValues>(
     identity: IIdentity,
     processModelId: string,
-    payload: DataModels.ProcessModels.ProcessStartRequestPayload,
+    payload: DataModels.ProcessModels.ProcessStartRequestPayload<TInputValues>,
     startCallbackType?: DataModels.ProcessModels.StartCallbackType,
     startEventId?: string,
     endEventId?: string,
   ): Promise<DataModels.ProcessModels.ProcessStartResponsePayload> {
     this.ensureIsAuthorized(identity);
 
-    return this.processModelApiService.startProcessInstance(identity, processModelId, payload, startCallbackType, startEventId, endEventId);
+    return this
+      .processModelApiService
+      .startProcessInstance<TInputValues>(identity, processModelId, payload, startCallbackType, startEventId, endEventId);
   }
 
   // UserTasks
-  public async getUserTasksForCorrelation(identity: IIdentity, correlationId: string): Promise<DataModels.UserTasks.UserTaskList> {
+  public async getUserTasksForCorrelation<TTokenPayload>(
+    identity: IIdentity,
+    correlationId: string,
+  ): Promise<Array<DataModels.UserTasks.UserTask<TTokenPayload>>> {
     this.ensureIsAuthorized(identity);
 
-    return this.userTaskApiService.getUserTasksForCorrelation(identity, correlationId);
+    return this.userTaskApiService.getUserTasksForCorrelation<TTokenPayload>(identity, correlationId);
   }
 
   public async finishUserTask(

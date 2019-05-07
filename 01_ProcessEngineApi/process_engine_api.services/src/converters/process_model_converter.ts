@@ -14,30 +14,30 @@ export class ProcessModelConverter {
 
     const processModelFacade: IProcessModelFacade = this.processModelFacadeFactory.create(processModel);
 
-    function consumerApiEventConverter(event: Model.Events.Event): DataModels.Events.Event {
-      const consumerApiEvent: DataModels.Events.Event = new DataModels.Events.Event();
-      consumerApiEvent.id = event.id;
+    function eventConverter(event: Model.Events.Event): DataModels.Events.Event {
+      const publicEvent: DataModels.Events.Event = new DataModels.Events.Event();
+      publicEvent.id = event.id;
 
-      return consumerApiEvent;
+      return publicEvent;
     }
 
-    let consumerApiStartEvents: Array<DataModels.Events.Event> = [];
-    let consumerApiEndEvents: Array<DataModels.Events.Event> = [];
+    let sanitizedStartEvents: Array<DataModels.Events.Event> = [];
+    let sanitizedEndEvents: Array<DataModels.Events.Event> = [];
 
     const processModelIsExecutable: boolean = processModelFacade.getIsExecutable();
 
     if (processModelIsExecutable) {
       const startEvents: Array<Model.Events.StartEvent> = processModelFacade.getStartEvents();
-      consumerApiStartEvents = startEvents.map(consumerApiEventConverter);
+      sanitizedStartEvents = startEvents.map(eventConverter);
 
       const endEvents: Array<Model.Events.EndEvent> = processModelFacade.getEndEvents();
-      consumerApiEndEvents = endEvents.map(consumerApiEventConverter);
+      sanitizedEndEvents = endEvents.map(eventConverter);
     }
 
     const processModelResponse: DataModels.ProcessModels.ProcessModel = {
       id: processModel.id,
-      startEvents: consumerApiStartEvents,
-      endEvents: consumerApiEndEvents,
+      startEvents: sanitizedStartEvents,
+      endEvents: sanitizedEndEvents,
     };
 
     return processModelResponse;

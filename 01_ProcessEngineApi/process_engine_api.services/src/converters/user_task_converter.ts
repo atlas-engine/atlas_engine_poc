@@ -39,12 +39,12 @@ export class UserTaskConverter {
     this.processTokenFacadeFactory = processTokenFacadeFactory;
   }
 
-  public async convertUserTasks(
+  public async convertUserTasks<TTokenPayload>(
     identity: IIdentity,
     suspendedFlowNodes: Array<FlowNodeInstance>,
-  ): Promise<DataModels.UserTasks.UserTaskList> {
+  ): Promise<Array<DataModels.UserTasks.UserTask<TTokenPayload>>> {
 
-    const suspendedUserTasks: Array<DataModels.UserTasks.UserTask> = [];
+    const suspendedUserTasks: Array<DataModels.UserTasks.UserTask<TTokenPayload>> = [];
 
     for (const suspendedFlowNode of suspendedFlowNodes) {
 
@@ -59,17 +59,13 @@ export class UserTaskConverter {
 
       const flowNodeModel: Model.Base.FlowNode = processModelFacade.getFlowNodeById(suspendedFlowNode.flowNodeId);
 
-      const userTask: DataModels.UserTasks.UserTask =
-        await this.convertToConsumerApiUserTask(flowNodeModel as Model.Activities.UserTask, suspendedFlowNode);
+      const userTask: DataModels.UserTasks.UserTask<TTokenPayload> =
+        await this.convertToPublicApiUserTask(flowNodeModel as Model.Activities.UserTask, suspendedFlowNode);
 
       suspendedUserTasks.push(userTask);
     }
 
-    const userTaskList: DataModels.UserTasks.UserTaskList = {
-      userTasks: suspendedUserTasks,
-    };
-
-    return userTaskList;
+    return suspendedUserTasks;
   }
 
   private async getProcessModelForFlowNodeInstance(
@@ -104,10 +100,10 @@ export class UserTaskConverter {
     return correlationForProcessInstance.processInstances[0].hash;
   }
 
-  private async convertToConsumerApiUserTask(
+  private async convertToPublicApiUserTask<TTokenPayload>(
     userTaskModel: Model.Activities.UserTask,
     userTaskInstance: FlowNodeInstance,
-  ): Promise<DataModels.UserTasks.UserTask> {
+  ): Promise<DataModels.UserTasks.UserTask<TTokenPayload>> {
 
     const currentUserTaskToken: ProcessToken = userTaskInstance.getTokenByType(ProcessTokenType.onSuspend);
 
@@ -115,7 +111,7 @@ export class UserTaskConverter {
 
     const userTaskFormFields: Array<DataModels.UserTasks.UserTaskFormField> =
       userTaskModel.formFields.map((formField: Model.Activities.Types.UserTaskFormField): DataModels.UserTasks.UserTaskFormField => {
-        return this.convertToConsumerApiFormField(formField, userTaskTokenOldFormat);
+        return this.convertToPublicApiFormField(formField, userTaskTokenOldFormat);
       });
 
     const userTaskConfig: DataModels.UserTasks.UserTaskConfig = {
@@ -125,7 +121,7 @@ export class UserTaskConverter {
       finishedMessage: userTaskModel.finishedMessage,
     };
 
-    const consumerApiUserTask: DataModels.UserTasks.UserTask = {
+    const sanitizedApiUserTask: DataModels.UserTasks.UserTask<TTokenPayload> = {
       id: userTaskInstance.flowNodeId,
       flowNodeInstanceId: userTaskInstance.id,
       name: userTaskModel.name,
@@ -136,10 +132,10 @@ export class UserTaskConverter {
       tokenPayload: currentUserTaskToken.payload,
     };
 
-    return consumerApiUserTask;
+    return sanitizedApiUserTask;
   }
 
-  private convertToConsumerApiFormField(
+  private convertToPublicApiFormField(
     formField: Model.Activities.Types.UserTaskFormField,
     oldTokenFormat: any,
   ): DataModels.UserTasks.UserTaskFormField {

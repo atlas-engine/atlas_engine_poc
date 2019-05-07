@@ -21,7 +21,7 @@ export class ProcessEngineApiController {
   public async getProcessModels(request: HttpRequestWithIdentity, response: Response): Promise<void> {
     const identity: IIdentity = request.identity;
 
-    const result: DataModels.ProcessModels.ProcessModelList = await this.processModelApiService.getProcessModels(identity);
+    const result: Array<DataModels.ProcessModels.ProcessModel> = await this.processModelApiService.getProcessModels(identity);
 
     response
       .status(this.httpCodeSuccessfulResponse)
@@ -43,7 +43,8 @@ export class ProcessEngineApiController {
     const processModelId: string = request.params.process_model_id;
     const startEventId: string = request.query.start_event_id;
     const endEventId: string = request.query.end_event_id;
-    const payload: DataModels.ProcessModels.ProcessStartRequestPayload = request.body;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const payload: DataModels.ProcessModels.ProcessStartRequestPayload<any> = request.body;
     let startCallbackType: DataModels.ProcessModels.StartCallbackType =
       <DataModels.ProcessModels.StartCallbackType> Number.parseInt(request.query.start_callback_type);
 
@@ -66,7 +67,8 @@ export class ProcessEngineApiController {
     const correlationId: string = request.params.correlation_id;
     const identity: IIdentity = request.identity;
 
-    const result: DataModels.UserTasks.UserTaskList = await this.userTaskApiService.getUserTasksForCorrelation(identity, correlationId);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result: Array<DataModels.UserTasks.UserTask<any>> = await this.userTaskApiService.getUserTasksForCorrelation(identity, correlationId);
 
     response
       .status(this.httpCodeSuccessfulResponse)
