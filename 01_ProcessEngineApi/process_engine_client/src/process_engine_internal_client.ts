@@ -1,31 +1,29 @@
 import * as EssentialProjectErrors from '@essential-projects/errors_ts';
 import {IIdentity} from '@essential-projects/iam_contracts';
 
-import {
-  DataModels,
-  IConsumerApi,
-  IConsumerApiAccessor,
-} from '@process-engine/consumer_api_contracts';
+import {APIs, DataModels, IProcessEngineClient} from '@process-engine/process_engine_api.contracts';
 
-export class InternalAccessor implements IConsumerApiAccessor {
+export class InternalAccessor implements IProcessEngineClient {
 
-  private _consumerApiService: IConsumerApi = undefined;
+  private processModelApiService: APIs.IProcessModelApi = undefined;
+  private userTaskApiService: APIs.IUserTaskApi = undefined;
 
-  constructor(consumerApiService: IConsumerApi) {
-    this._consumerApiService = consumerApiService;
+  constructor(processModelApiService: APIs.IProcessModelApi, userTaskApiService: APIs.IUserTaskApi) {
+    this.processModelApiService = processModelApiService;
+    this.userTaskApiService = userTaskApiService;
   }
 
   // Process models and instances
   public async getProcessModels(identity: IIdentity): Promise<DataModels.ProcessModels.ProcessModelList> {
-    this._ensureIsAuthorized(identity);
+    this.ensureIsAuthorized(identity);
 
-    return this._consumerApiService.getProcessModels(identity);
+    return this.processModelApiService.getProcessModels(identity);
   }
 
   public async getProcessModelById(identity: IIdentity, processModelId: string): Promise<DataModels.ProcessModels.ProcessModel> {
-    this._ensureIsAuthorized(identity);
+    this.ensureIsAuthorized(identity);
 
-    return this._consumerApiService.getProcessModelById(identity, processModelId);
+    return this.processModelApiService.getProcessModelById(identity, processModelId);
   }
 
   public async startProcessInstance(
@@ -36,16 +34,16 @@ export class InternalAccessor implements IConsumerApiAccessor {
     startEventId?: string,
     endEventId?: string,
   ): Promise<DataModels.ProcessModels.ProcessStartResponsePayload> {
-    this._ensureIsAuthorized(identity);
+    this.ensureIsAuthorized(identity);
 
-    return this._consumerApiService.startProcessInstance(identity, processModelId, payload, startCallbackType, startEventId, endEventId);
+    return this.processModelApiService.startProcessInstance(identity, processModelId, payload, startCallbackType, startEventId, endEventId);
   }
 
   // UserTasks
   public async getUserTasksForCorrelation(identity: IIdentity, correlationId: string): Promise<DataModels.UserTasks.UserTaskList> {
-    this._ensureIsAuthorized(identity);
+    this.ensureIsAuthorized(identity);
 
-    return this._consumerApiService.getUserTasksForCorrelation(identity, correlationId);
+    return this.userTaskApiService.getUserTasksForCorrelation(identity, correlationId);
   }
 
   public async finishUserTask(
@@ -55,15 +53,16 @@ export class InternalAccessor implements IConsumerApiAccessor {
     userTaskInstanceId: string,
     userTaskResult: DataModels.UserTasks.UserTaskResult,
   ): Promise<void> {
-    this._ensureIsAuthorized(identity);
+    this.ensureIsAuthorized(identity);
 
-    return this._consumerApiService.finishUserTask(identity, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
+    return this.userTaskApiService.finishUserTask(identity, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
   }
 
-  private _ensureIsAuthorized(identity: IIdentity): void {
+  private ensureIsAuthorized(identity: IIdentity): void {
     const noAuthTokenProvided: boolean = !identity || typeof identity.token !== 'string';
     if (noAuthTokenProvided) {
       throw new EssentialProjectErrors.UnauthorizedError('No auth token provided!');
     }
   }
+
 }

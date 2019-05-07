@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/no-explicit-any: ["off"] */
 import * as EssentialProjectErrors from '@essential-projects/errors_ts';
 import {IEventAggregator} from '@essential-projects/event_aggregator_contracts';
 import {IIdentity} from '@essential-projects/iam_contracts';
@@ -11,7 +12,6 @@ import {FinishUserTaskMessage as InternalFinishUserTaskMessage} from '@process-e
 import {UserTaskConverter} from './converters/index';
 
 export class UserTaskApiService implements APIs.IUserTaskApi {
-  public config: any = undefined;
 
   private readonly eventAggregator: IEventAggregator;
   private readonly flowNodeInstanceService: IFlowNodeInstanceService;
@@ -28,7 +28,6 @@ export class UserTaskApiService implements APIs.IUserTaskApi {
     this.userTaskConverter = userTaskConverter;
   }
 
-  // UserTasks
   public async getUserTasksForCorrelation(identity: IIdentity, correlationId: string): Promise<DataModels.UserTasks.UserTaskList> {
 
     const suspendedFlowNodes: Array<FlowNodeInstance> =
@@ -47,10 +46,10 @@ export class UserTaskApiService implements APIs.IUserTaskApi {
     userTaskResult?: DataModels.UserTasks.UserTaskResult,
   ): Promise<void> {
 
-    const resultForProcessEngine: any = this._createUserTaskResultForProcessEngine(userTaskResult);
+    const resultForProcessEngine: any = this.createUserTaskResultForProcessEngine(userTaskResult);
 
     const matchingFlowNodeInstance: FlowNodeInstance =
-      await this._getFlowNodeInstanceForCorrelationInProcessInstance(correlationId, processInstanceId, userTaskInstanceId);
+      await this.getFlowNodeInstanceForCorrelationInProcessInstance(correlationId, processInstanceId, userTaskInstanceId);
 
     const noMatchingInstanceFound: boolean = matchingFlowNodeInstance === undefined;
     if (noMatchingInstanceFound) {
@@ -71,15 +70,15 @@ export class UserTaskApiService implements APIs.IUserTaskApi {
         .replace(Messages.EventAggregatorSettings.messageParams.processInstanceId, processInstanceId)
         .replace(Messages.EventAggregatorSettings.messageParams.flowNodeInstanceId, userTaskInstanceId);
 
-      this.eventAggregator.subscribeOnce(userTaskFinishedEvent, () => {
+      this.eventAggregator.subscribeOnce(userTaskFinishedEvent, (): void => {
         resolve();
       });
 
-      this._publishFinishUserTaskEvent(identity, matchingUserTask, resultForProcessEngine);
+      this.publishFinishUserTaskEvent(identity, matchingUserTask, resultForProcessEngine);
     });
   }
 
-  private async _getFlowNodeInstanceForCorrelationInProcessInstance(
+  private async getFlowNodeInstanceForCorrelationInProcessInstance(
     correlationId: string,
     processInstanceId: string,
     instanceId: string,
@@ -88,7 +87,7 @@ export class UserTaskApiService implements APIs.IUserTaskApi {
     const suspendedFlowNodeInstances: Array<FlowNodeInstance> =
       await this.flowNodeInstanceService.querySuspendedByProcessInstance(processInstanceId);
 
-    const matchingInstance: FlowNodeInstance = suspendedFlowNodeInstances.find((instance: FlowNodeInstance) => {
+    const matchingInstance: FlowNodeInstance = suspendedFlowNodeInstances.find((instance: FlowNodeInstance): boolean => {
       return instance.id === instanceId &&
              instance.correlationId === correlationId;
     });
@@ -96,7 +95,7 @@ export class UserTaskApiService implements APIs.IUserTaskApi {
     return matchingInstance;
   }
 
-  private _createUserTaskResultForProcessEngine(finishedTask: DataModels.UserTasks.UserTaskResult): any {
+  private createUserTaskResultForProcessEngine(finishedTask: DataModels.UserTasks.UserTaskResult): any {
 
     const noResultsProvided: boolean = !finishedTask || !finishedTask.formFields;
 
@@ -109,13 +108,13 @@ export class UserTaskApiService implements APIs.IUserTaskApi {
       || Array.isArray(finishedTask.formFields);
 
     if (formFieldResultIsNotAnObject) {
-      throw new EssentialProjectErrors.BadRequestError(`The UserTask's FormFields are not an object.`);
+      throw new EssentialProjectErrors.BadRequestError('The UserTask\'s FormFields are not an object.');
     }
 
     return finishedTask.formFields;
   }
 
-  private _publishFinishUserTaskEvent(
+  private publishFinishUserTaskEvent(
     identity: IIdentity,
     userTaskInstance: DataModels.UserTasks.UserTask,
     userTaskResult: any,
@@ -140,4 +139,5 @@ export class UserTaskApiService implements APIs.IUserTaskApi {
 
     this.eventAggregator.publish(finishUserTaskEvent, finishUserTaskMessage);
   }
+
 }

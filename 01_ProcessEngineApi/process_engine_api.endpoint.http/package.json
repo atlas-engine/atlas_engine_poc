@@ -39,12 +39,13 @@
     "typescript": "^3.4.5"
   },
   "scripts": {
-    "build": "npm run build-commonjs && npm run build-amd",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && npm run build-commonjs && npm run build-amd",
     "build-commonjs": "tsc",
     "build-amd": "tsc --module amd --outDir ./dist/amd",
     "prepare": "npm run build",
     "lint": "eslint src/**/*.ts src/*.ts",
-    "lint-fix": "eslint --fix src/**/*.ts",
+    "lint-fix": "eslint --fix src/**/*.ts src/*.ts",
     "test": ":"
   }
 }

@@ -7,15 +7,11 @@ import {IProcessModelUseCases, Model} from '@process-engine/process_model.contra
 import {
   EndEventReachedMessage,
   IExecuteProcessService,
-  ProcessStartedMessage,
 } from '@process-engine/process_engine_contracts';
 
-import {
-  ProcessModelConverter,
-} from './converters/index';
+import {ProcessModelConverter} from './converters/index';
 
 export class ProcessModelApiService implements APIs.IProcessModelApi {
-  public config: any = undefined;
 
   private readonly executeProcessService: IExecuteProcessService;
   private readonly processModelUseCase: IProcessModelUseCases;
@@ -31,23 +27,23 @@ export class ProcessModelApiService implements APIs.IProcessModelApi {
     this.processModelConverter = processModelConverter;
   }
 
-  // Process models and instances
   public async getProcessModels(identity: IIdentity): Promise<DataModels.ProcessModels.ProcessModelList> {
 
-    const processModels: Array<Model.Process> = await this.processModelUseCase.getProcessModels(identity);
-    const consumerApiProcessModels: Array<DataModels.ProcessModels.ProcessModel> = processModels.map((processModel: Model.Process) => {
-      return this.processModelConverter.convertProcessModel(processModel);
-    });
+    const processModels = await this.processModelUseCase.getProcessModels(identity);
+    const consumerApiProcessModels =
+      processModels.map((processModel: Model.Process): DataModels.ProcessModels.ProcessModel => {
+        return this.processModelConverter.convertProcessModel(processModel);
+      });
 
-    return <DataModels.ProcessModels.ProcessModelList> {
+    return {
       processModels: consumerApiProcessModels,
     };
   }
 
   public async getProcessModelById(identity: IIdentity, processModelId: string): Promise<DataModels.ProcessModels.ProcessModel> {
 
-    const processModel: Model.Process = await this.processModelUseCase.getProcessModelById(identity, processModelId);
-    const consumerApiProcessModel: DataModels.ProcessModels.ProcessModel = this.processModelConverter.convertProcessModel(processModel);
+    const processModel = await this.processModelUseCase.getProcessModelById(identity, processModelId);
+    const consumerApiProcessModel = this.processModelConverter.convertProcessModel(processModel);
 
     return consumerApiProcessModel;
   }
@@ -61,26 +57,25 @@ export class ProcessModelApiService implements APIs.IProcessModelApi {
     endEventId?: string,
   ): Promise<DataModels.ProcessModels.ProcessStartResponsePayload> {
 
-    const useDefaultStartCallbackType: boolean = startCallbackType === undefined;
-    if (useDefaultStartCallbackType) {
-      startCallbackType = DataModels.ProcessModels.StartCallbackType.CallbackOnProcessInstanceCreated;
+    const startCallbackTypeToUse = startCallbackType === undefined
+      ? DataModels.ProcessModels.StartCallbackType.CallbackOnProcessInstanceCreated
+      : startCallbackType;
+
+    const startCallbackTypeIsInvalid = !Object.values(DataModels.ProcessModels.StartCallbackType).includes(startCallbackTypeToUse);
+    if (startCallbackTypeIsInvalid) {
+      throw new EssentialProjectErrors.BadRequestError(`${startCallbackTypeToUse} is not a valid return option!`);
     }
 
-    if (!Object.values(DataModels.ProcessModels.StartCallbackType).includes(startCallbackType)) {
-      throw new EssentialProjectErrors.BadRequestError(`${startCallbackType} is not a valid return option!`);
-    }
+    const correlationId = payload.correlationId || uuid.v4();
 
-    const correlationId: string = payload.correlationId || uuid.v4();
-
-    // Execution of the ProcessModel will still be done with the requesting users identity.
     const response: DataModels.ProcessModels.ProcessStartResponsePayload =
-      await this._startProcessInstance(identity, correlationId, processModelId, startEventId, payload, startCallbackType, endEventId);
+      await this
+        .startProcessInstanceAndReturnResult(identity, correlationId, processModelId, startEventId, payload, startCallbackTypeToUse, endEventId);
 
     return response;
-
   }
 
-  private async _startProcessInstance(
+  private async startProcessInstanceAndReturnResult(
     identity: IIdentity,
     correlationId: string,
     processModelId: string,
@@ -96,9 +91,9 @@ export class ProcessModelApiService implements APIs.IProcessModelApi {
     };
 
     // Only start the process instance and return
-    const resolveImmediatelyAfterStart: boolean = startCallbackType === DataModels.ProcessModels.StartCallbackType.CallbackOnProcessInstanceCreated;
+    const resolveImmediatelyAfterStart = startCallbackType === DataModels.ProcessModels.StartCallbackType.CallbackOnProcessInstanceCreated;
     if (resolveImmediatelyAfterStart) {
-      const startResult: ProcessStartedMessage =
+      const startResult =
         await this.executeProcessService.start(identity, processModelId, correlationId, startEventId, payload.inputValues, payload.callerId);
 
       response.processInstanceId = startResult.processInstanceId;
@@ -109,7 +104,7 @@ export class ProcessModelApiService implements APIs.IProcessModelApi {
     let processEndedMessage: EndEventReachedMessage;
 
     // Start the process instance and wait for a specific end event result
-    const resolveAfterReachingSpecificEndEvent: boolean = startCallbackType === DataModels.ProcessModels.StartCallbackType.CallbackOnEndEventReached;
+    const resolveAfterReachingSpecificEndEvent = startCallbackType === DataModels.ProcessModels.StartCallbackType.CallbackOnEndEventReached;
     if (resolveAfterReachingSpecificEndEvent) {
 
       processEndedMessage = await this
@@ -134,4 +129,5 @@ export class ProcessModelApiService implements APIs.IProcessModelApi {
 
     return response;
   }
+
 }

@@ -2,48 +2,45 @@ import * as EssentialProjectErrors from '@essential-projects/errors_ts';
 import {IHttpClient, IRequestOptions, IResponse} from '@essential-projects/http_contracts';
 import {IIdentity} from '@essential-projects/iam_contracts';
 
-import {
-  DataModels,
-  IConsumerApiAccessor,
-  IConsumerSocketIoAccessor,
-  restSettings,
-} from '@process-engine/consumer_api_contracts';
+import {DataModels, IProcessEngineClient, restSettings} from '@process-engine/process_engine_api.contracts';
 
-export class ProcessEngineHttpClient implements IConsumerApiAccessor, IConsumerSocketIoAccessor {
-  private baseUrl: string = 'api/process-engine/v1';
+export class ProcessEngineHttpClient implements IProcessEngineClient {
 
-  private _httpClient: IHttpClient = undefined;
-
+  // eslint-disable-next-line
   public config: any;
 
+  private baseUrl: string = 'api/process-engine/v1';
+
+  private httpClient: IHttpClient = undefined;
+
   constructor(httpClient: IHttpClient) {
-    this._httpClient = httpClient;
+    this.httpClient = httpClient;
   }
 
   // Process models and instances
   public async getProcessModels(identity: IIdentity): Promise<DataModels.ProcessModels.ProcessModelList> {
-    this._ensureIsAuthorized(identity);
+    this.ensureIsAuthorized(identity);
 
-    const requestAuthHeaders: IRequestOptions = this._createRequestAuthHeaders(identity);
+    const requestAuthHeaders: IRequestOptions = this.createRequestAuthHeaders(identity);
 
-    const url: string = this._applyBaseUrl(restSettings.paths.processModels);
+    const url: string = this.applyBaseUrl(restSettings.paths.processModels);
 
     const httpResponse: IResponse<DataModels.ProcessModels.ProcessModelList> =
-      await this._httpClient.get<DataModels.ProcessModels.ProcessModelList>(url, requestAuthHeaders);
+      await this.httpClient.get<DataModels.ProcessModels.ProcessModelList>(url, requestAuthHeaders);
 
     return httpResponse.result;
   }
 
   public async getProcessModelById(identity: IIdentity, processModelId: string): Promise<DataModels.ProcessModels.ProcessModel> {
-    this._ensureIsAuthorized(identity);
+    this.ensureIsAuthorized(identity);
 
-    const requestAuthHeaders: IRequestOptions = this._createRequestAuthHeaders(identity);
+    const requestAuthHeaders: IRequestOptions = this.createRequestAuthHeaders(identity);
 
     let url: string = restSettings.paths.processModelById.replace(restSettings.params.processModelId, processModelId);
-    url = this._applyBaseUrl(url);
+    url = this.applyBaseUrl(url);
 
     const httpResponse: IResponse<DataModels.ProcessModels.ProcessModel> =
-      await this._httpClient.get<DataModels.ProcessModels.ProcessModel>(url, requestAuthHeaders);
+      await this.httpClient.get<DataModels.ProcessModels.ProcessModel>(url, requestAuthHeaders);
 
     return httpResponse.result;
   }
@@ -56,16 +53,16 @@ export class ProcessEngineHttpClient implements IConsumerApiAccessor, IConsumerS
     startEventId?: string,
     endEventId?: string,
   ): Promise<DataModels.ProcessModels.ProcessStartResponsePayload> {
-    this._ensureIsAuthorized(identity);
+    this.ensureIsAuthorized(identity);
 
-    const url: string = this._buildStartProcessInstanceUrl(processModelId, startCallbackType, endEventId, startEventId);
+    const url: string = this.buildStartProcessInstanceUrl(processModelId, startCallbackType, endEventId, startEventId);
 
-    const requestAuthHeaders: IRequestOptions = this._createRequestAuthHeaders(identity);
+    const requestAuthHeaders: IRequestOptions = this.createRequestAuthHeaders(identity);
 
     const httpResponse: IResponse<DataModels.ProcessModels.ProcessStartResponsePayload> =
       await this
-        ._httpClient
-        // tslint:disable-next-line:max-line-length
+        .httpClient
+        // eslint-disable-next-line
         .post<DataModels.ProcessModels.ProcessStartRequestPayload, DataModels.ProcessModels.ProcessStartResponsePayload>(url, payload, requestAuthHeaders);
 
     return httpResponse.result;
@@ -73,15 +70,15 @@ export class ProcessEngineHttpClient implements IConsumerApiAccessor, IConsumerS
 
   // UserTasks
   public async getUserTasksForCorrelation(identity: IIdentity, correlationId: string): Promise<DataModels.UserTasks.UserTaskList> {
-    this._ensureIsAuthorized(identity);
+    this.ensureIsAuthorized(identity);
 
-    const requestAuthHeaders: IRequestOptions = this._createRequestAuthHeaders(identity);
+    const requestAuthHeaders: IRequestOptions = this.createRequestAuthHeaders(identity);
 
     let url: string = restSettings.paths.correlationUserTasks.replace(restSettings.params.correlationId, correlationId);
-    url = this._applyBaseUrl(url);
+    url = this.applyBaseUrl(url);
 
     const httpResponse: IResponse<DataModels.UserTasks.UserTaskList> =
-      await this._httpClient.get<DataModels.UserTasks.UserTaskList>(url, requestAuthHeaders);
+      await this.httpClient.get<DataModels.UserTasks.UserTaskList>(url, requestAuthHeaders);
 
     return httpResponse.result;
   }
@@ -93,21 +90,21 @@ export class ProcessEngineHttpClient implements IConsumerApiAccessor, IConsumerS
     userTaskInstanceId: string,
     userTaskResult: DataModels.UserTasks.UserTaskResult,
   ): Promise<void> {
-    this._ensureIsAuthorized(identity);
+    this.ensureIsAuthorized(identity);
 
-    const requestAuthHeaders: IRequestOptions = this._createRequestAuthHeaders(identity);
+    const requestAuthHeaders: IRequestOptions = this.createRequestAuthHeaders(identity);
 
     let url: string = restSettings.paths.finishUserTask
       .replace(restSettings.params.processInstanceId, processInstanceId)
       .replace(restSettings.params.correlationId, correlationId)
       .replace(restSettings.params.userTaskInstanceId, userTaskInstanceId);
 
-    url = this._applyBaseUrl(url);
+    url = this.applyBaseUrl(url);
 
-    await this._httpClient.post<DataModels.UserTasks.UserTaskResult, any>(url, userTaskResult, requestAuthHeaders);
+    await this.httpClient.post<DataModels.UserTasks.UserTaskResult, void>(url, userTaskResult, requestAuthHeaders);
   }
 
-  private _createRequestAuthHeaders(identity: IIdentity): IRequestOptions {
+  private createRequestAuthHeaders(identity: IIdentity): IRequestOptions {
     const noAuthTokenProvided: boolean = !identity || typeof identity.token !== 'string';
     if (noAuthTokenProvided) {
       return {};
@@ -122,7 +119,7 @@ export class ProcessEngineHttpClient implements IConsumerApiAccessor, IConsumerS
     return requestAuthHeaders;
   }
 
-  private _buildStartProcessInstanceUrl(
+  private buildStartProcessInstanceUrl(
     processModelId: string,
     startCallbackType: DataModels.ProcessModels.StartCallbackType,
     endEventId: string,
@@ -143,19 +140,20 @@ export class ProcessEngineHttpClient implements IConsumerApiAccessor, IConsumerS
       url = `${url}&end_event_id=${endEventId}`;
     }
 
-    url = this._applyBaseUrl(url);
+    url = this.applyBaseUrl(url);
 
     return url;
   }
 
-  private _applyBaseUrl(url: string): string {
+  private applyBaseUrl(url: string): string {
     return `${this.baseUrl}${url}`;
   }
 
-  private _ensureIsAuthorized(identity: IIdentity): void {
+  private ensureIsAuthorized(identity: IIdentity): void {
     const noAuthTokenProvided: boolean = !identity || typeof identity.token !== 'string';
     if (noAuthTokenProvided) {
       throw new EssentialProjectErrors.UnauthorizedError('No auth token provided!');
     }
   }
+
 }

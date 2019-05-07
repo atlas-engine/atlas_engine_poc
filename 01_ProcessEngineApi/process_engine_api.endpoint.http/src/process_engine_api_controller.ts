@@ -23,7 +23,8 @@ export class ProcessEngineApiController {
 
     const result: DataModels.ProcessModels.ProcessModelList = await this.processModelApiService.getProcessModels(identity);
 
-    response.status(this.httpCodeSuccessfulResponse)
+    response
+      .status(this.httpCodeSuccessfulResponse)
       .json(result);
   }
 
@@ -33,7 +34,8 @@ export class ProcessEngineApiController {
 
     const result: DataModels.ProcessModels.ProcessModel = await this.processModelApiService.getProcessModelById(identity, processModelId);
 
-    response.status(this.httpCodeSuccessfulResponse)
+    response
+      .status(this.httpCodeSuccessfulResponse)
       .json(result);
   }
 
@@ -54,7 +56,8 @@ export class ProcessEngineApiController {
     const result: DataModels.ProcessModels.ProcessStartResponsePayload =
       await this.processModelApiService.startProcessInstance(identity, processModelId, payload, startCallbackType, startEventId, endEventId);
 
-    response.status(this.httpCodeSuccessfulResponse)
+    response
+      .status(this.httpCodeSuccessfulResponse)
       .json(result);
   }
 
@@ -65,7 +68,8 @@ export class ProcessEngineApiController {
 
     const result: DataModels.UserTasks.UserTaskList = await this.userTaskApiService.getUserTasksForCorrelation(identity, correlationId);
 
-    response.status(this.httpCodeSuccessfulResponse)
+    response
+      .status(this.httpCodeSuccessfulResponse)
       .json(result);
   }
 
@@ -78,7 +82,8 @@ export class ProcessEngineApiController {
 
     await this.userTaskApiService.finishUserTask(identity, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
 
-    response.status(this.httpCodeSuccessfulNoContentResponse)
+    response
+      .status(this.httpCodeSuccessfulNoContentResponse)
       .send();
   }
 
