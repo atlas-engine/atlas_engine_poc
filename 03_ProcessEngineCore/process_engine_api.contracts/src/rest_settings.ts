@@ -1,4 +1,3 @@
-// tslint:disable:typedef
 const params = {
   processInstanceId: ':process_instance_id',
   processModelId: ':process_model_id',
