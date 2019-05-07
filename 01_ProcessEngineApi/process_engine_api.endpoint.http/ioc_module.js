@@ -14,7 +14,7 @@ function registerInContainer(container) {
     .tags(routerDiscoveryTag);
 
   container.register('ProcessEngineApiController', ProcessEngineApiController)
-    .dependencies('ProcessEngineApiService')
+    .dependencies('ProcessModelApiService', 'UserTaskApiService')
     .singleton();
 }
 

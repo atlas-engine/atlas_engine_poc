@@ -1,7 +1,7 @@
 import {BaseRouter} from '@essential-projects/http_node';
 import {IIdentityService} from '@essential-projects/iam_contracts';
 
-import {restSettings} from '@process-engine/consumer_api_contracts';
+import {restSettings} from '@process-engine/process_engine_api.contracts';
 import {ProcessEngineApiController} from './process_engine_api_controller';
 import {createResolveIdentityMiddleware, MiddlewareFunction} from './middlewares/index';
 

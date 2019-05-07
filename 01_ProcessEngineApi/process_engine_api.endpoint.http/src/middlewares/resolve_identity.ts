@@ -8,7 +8,7 @@ export type MiddlewareFunction = (request: HttpRequestWithIdentity, response: Re
 
 export function createResolveIdentityMiddleware(identityService: IIdentityService): MiddlewareFunction {
 
-  return async(request: HttpRequestWithIdentity, response: Response, next: NextFunction): Promise<void> => {
+  return async (request: HttpRequestWithIdentity, response: Response, next: NextFunction): Promise<void> => {
     const bearerToken: string = request.get('authorization');
 
     if (!bearerToken) {

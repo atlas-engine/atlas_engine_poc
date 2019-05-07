@@ -1,7 +1,7 @@
 import {HttpRequestWithIdentity} from '@essential-projects/http_contracts';
 import {IIdentity} from '@essential-projects/iam_contracts';
 
-import {DataModels, IConsumerApi} from '@process-engine/consumer_api_contracts';
+import {APIs, DataModels, IConsumerApiHttpController} from '@process-engine/process_engine_api.contracts';
 
 import {Response} from 'express';
 
@@ -11,16 +11,18 @@ export class ProcessEngineApiController {
   private httpCodeSuccessfulResponse: number = 200;
   private httpCodeSuccessfulNoContentResponse: number = 204;
 
-  private _processEngineApiService: IConsumerApi;
+  private _processModelApiService: APIs.IProcessModelApi;
+  private _userTaskApiService: APIs.IUserTaskApi;
 
-  constructor(processEngineApiService: IConsumerApi) {
-    this._processEngineApiService = processEngineApiService;
+  constructor(processModelApiService: APIs.IProcessModelApi, userTaskApiService: APIs.IUserTaskApi) {
+    this._processModelApiService = processModelApiService;
+    this._userTaskApiService = userTaskApiService;
   }
 
   public async getProcessModels(request: HttpRequestWithIdentity, response: Response): Promise<void> {
     const identity: IIdentity = request.identity;
 
-    const result: DataModels.ProcessModels.ProcessModelList = await this._processEngineApiService.getProcessModels(identity);
+    const result: DataModels.ProcessModels.ProcessModelList = await this._processModelApiService.getProcessModels(identity);
 
     response.status(this.httpCodeSuccessfulResponse).json(result);
   }
@@ -29,7 +31,7 @@ export class ProcessEngineApiController {
     const processModelId: string = request.params.process_model_id;
     const identity: IIdentity = request.identity;
 
-    const result: DataModels.ProcessModels.ProcessModel = await this._processEngineApiService.getProcessModelById(identity, processModelId);
+    const result: DataModels.ProcessModels.ProcessModel = await this._processModelApiService.getProcessModelById(identity, processModelId);
 
     response.status(this.httpCodeSuccessfulResponse).json(result);
   }
@@ -49,7 +51,7 @@ export class ProcessEngineApiController {
     const identity: IIdentity = request.identity;
 
     const result: DataModels.ProcessModels.ProcessStartResponsePayload =
-      await this._processEngineApiService.startProcessInstance(identity, processModelId, payload, startCallbackType, startEventId, endEventId);
+      await this._processModelApiService.startProcessInstance(identity, processModelId, payload, startCallbackType, startEventId, endEventId);
 
     response.status(this.httpCodeSuccessfulResponse).json(result);
   }
@@ -60,7 +62,7 @@ export class ProcessEngineApiController {
     const correlationId: string = request.params.correlation_id;
     const identity: IIdentity = request.identity;
 
-    const result: DataModels.UserTasks.UserTaskList = await this._processEngineApiService.getUserTasksForCorrelation(identity, correlationId);
+    const result: DataModels.UserTasks.UserTaskList = await this._userTaskApiService.getUserTasksForCorrelation(identity, correlationId);
 
     response.status(this.httpCodeSuccessfulResponse).json(result);
   }
@@ -72,7 +74,7 @@ export class ProcessEngineApiController {
     const userTaskInstanceId: string = request.params.user_task_instance_id;
     const userTaskResult: DataModels.UserTasks.UserTaskResult = request.body;
 
-    await this._processEngineApiService.finishUserTask(identity, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
+    await this._userTaskApiService.finishUserTask(identity, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
 
     response.status(this.httpCodeSuccessfulNoContentResponse).send();
   }
