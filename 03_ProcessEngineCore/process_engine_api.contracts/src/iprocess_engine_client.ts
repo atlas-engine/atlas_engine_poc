@@ -5,6 +5,4 @@ import {APIs} from './apis/index';
  * This service contains all functions that the ConsumerAPI employs to
  * communicate with the ProcessEngine.
  */
-export interface IProcessEngineClient
-  extends APIs.IProcessModelApi,
-          APIs.IUserTaskApi {}
+export interface IProcessEngineClient extends APIs.IProcessModelApi, APIs.IUserTaskApi {}

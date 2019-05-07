@@ -1,15 +1,14 @@
-/* eslint @typescript-eslint/no-explicit-any: "off" */
 /**
  * The base class for definining event messages.
  */
-export class BaseEventMessage {
+export class BaseEventMessage<TCurrentToken> {
 
   public readonly correlationId: string;
   public readonly processModelId: string;
   public readonly processInstanceId: string;
   public readonly flowNodeId: string;
   public readonly flowNodeInstanceId: string;
-  public readonly currentToken: any;
+  public readonly currentToken: TCurrentToken;
 
   constructor(
     correlationId: string,
@@ -17,7 +16,7 @@ export class BaseEventMessage {
     processInstanceId: string,
     flowNodeId: string,
     flowNodeInstanceId: string,
-    currentToken: any,
+    currentToken: TCurrentToken,
   ) {
     this.correlationId = correlationId;
     this.processModelId = processModelId;

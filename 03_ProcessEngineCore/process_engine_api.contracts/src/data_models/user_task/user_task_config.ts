@@ -4,6 +4,7 @@ import {UserTaskFormField} from './user_task_form_field';
  * Contains information about a UserTasks configuration.
  */
 export class UserTaskConfig {
+
   /**
    * A list of accessible FormFields for the UserTask.
    */
@@ -14,4 +15,5 @@ export class UserTaskConfig {
   public preferredControl?: string;
   public description?: string;
   public finishedMessage?: string;
+
 }

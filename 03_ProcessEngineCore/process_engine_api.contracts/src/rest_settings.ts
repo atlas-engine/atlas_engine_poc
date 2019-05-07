@@ -9,7 +9,7 @@ const params = {
 
 const paths = {
   // ProcessModels
-  processModels: `/process_models`,
+  processModels: '/process_models',
   processModelById: `/process_models/${params.processModelId}`,
   startProcessInstance: `/process_models/${params.processModelId}/start`,
   // UserTasks

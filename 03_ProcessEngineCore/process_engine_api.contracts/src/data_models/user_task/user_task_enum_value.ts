@@ -3,6 +3,8 @@
  * about the values contained within that enumeration.
  */
 export class UserTaskEnumValue {
+
   public id: string;
   public name: string;
+
 }

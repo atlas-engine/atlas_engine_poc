@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as deploymentApi from './ideployment_api';
 import * as kpiApi from './ikpi_api';
 

@@ -3,6 +3,7 @@
  * Includes the raw xml code and the name with which to save it.
  */
 export class ImportProcessDefinitionsRequestPayload {
+
   public name: string;
   public xml: string;
   /**
@@ -11,4 +12,5 @@ export class ImportProcessDefinitionsRequestPayload {
    * Use with caution.
    */
   public overwriteExisting?: boolean;
+
 }

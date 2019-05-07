@@ -21,7 +21,7 @@ const queryParams = {
 
 const paths = {
   // Deployment
-  importProcessModel: `/import_process_model`,
+  importProcessModel: '/import_process_model',
   undeployProcessModel: `/undeploy_process_model/${params.processModelId}`,
   // KPI
   getRuntimeInformationForProcessModel: `/process_model/${params.processModelId}/runtime_information`,

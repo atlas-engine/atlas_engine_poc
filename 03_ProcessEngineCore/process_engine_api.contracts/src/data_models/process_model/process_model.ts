@@ -6,7 +6,9 @@ import {Event} from '../event/index';
  * that a requesting user is not allowed to see.
  */
 export class ProcessModel {
+
   public id: string;
   public startEvents: Array<Event> = [];
   public endEvents: Array<Event> = [];
+
 }

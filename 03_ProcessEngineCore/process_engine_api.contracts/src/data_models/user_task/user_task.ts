@@ -3,7 +3,8 @@ import {UserTaskConfig} from './user_task_config';
 /**
  * Describes a suspended UserTask that is waiting to be finished.
  */
-export class UserTask {
+export class UserTask<TTokenPayload> {
+
   /**
    * The model ID of the UserTask, as it is declared in the ProcessModel.
    */
@@ -27,5 +28,6 @@ export class UserTask {
   /**
    * The token payload the UserTask got suspended with.
    */
-  public tokenPayload: any;
+  public tokenPayload: TTokenPayload;
+
 }

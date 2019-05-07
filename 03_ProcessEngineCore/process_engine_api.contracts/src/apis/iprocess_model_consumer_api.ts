@@ -17,7 +17,7 @@ export interface IProcessModelApi {
    * @throws {UnauthorizedError} If the given identity does not contain a
    *                             valid auth token.
    */
-  getProcessModels(identity: IIdentity): Promise<DataModels.ProcessModels.ProcessModelList>;
+  getProcessModels(identity: IIdentity): Promise<Array<DataModels.ProcessModels.ProcessModel>>;
 
   /**
    * Retrieves a ProcessModel by its ID.
@@ -64,10 +64,10 @@ export interface IProcessModelApi {
    *                             ProcessModel.
    * @throws {NotFoundError}     If ProcessModel was not found.
    */
-  startProcessInstance(
+  startProcessInstance<TInputValues>(
     identity: IIdentity,
     processModelId: string,
-    payload: DataModels.ProcessModels.ProcessStartRequestPayload,
+    payload: DataModels.ProcessModels.ProcessStartRequestPayload<TInputValues>,
     startCallbackType: DataModels.ProcessModels.StartCallbackType,
     startEventId?: string,
     endEventId?: string,

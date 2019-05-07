@@ -1,6 +1,6 @@
-import {HttpRequestWithIdentity} from '@essential-projects/http_contracts';
-
 import {Response} from 'express';
+
+import {HttpRequestWithIdentity} from '@essential-projects/http_contracts';
 
 /**
  * Contains functions for a HTTP Controller that can be used for accessing

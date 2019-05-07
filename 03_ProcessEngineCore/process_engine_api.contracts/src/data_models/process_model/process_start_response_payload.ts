@@ -3,6 +3,7 @@
  * Depending on the type of start callback used, this will also contain information about the Correlation result.
  */
 export class ProcessStartResponsePayload {
+
   /**
    * The ID of the ProcessInstance.
    */
@@ -21,4 +22,5 @@ export class ProcessStartResponsePayload {
    * this will contain the final result with which ProcessInstance was finished.
    */
   public tokenPayload?: string;
+
 }

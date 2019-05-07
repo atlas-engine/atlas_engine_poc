@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as bpmnEvents from './bpmn_events/index';
 import * as systemEvents from './system_events/index';
 

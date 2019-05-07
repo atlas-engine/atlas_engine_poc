@@ -4,6 +4,7 @@ import {EventType} from './event_type';
  * Describes a triggerable event.
  */
 export class Event {
+
   /**
    * The model ID of the event, as it is declared in the ProcessModel.
    */
@@ -27,4 +28,5 @@ export class Event {
   public correlationId: string;
   public processModelId: string;
   public processInstanceId?: string;
+
 }

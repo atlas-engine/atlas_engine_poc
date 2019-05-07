@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as processModelApi from './iprocess_model_consumer_api';
 import * as userTaskApi from './iuser_task_consumer_api';
 

@@ -1,6 +1,6 @@
 import {IIdentity} from '@essential-projects/iam_contracts';
 
-import {UserTaskList, UserTaskResult} from '../data_models/user_task/index';
+import {UserTask, UserTaskResult} from '../data_models/user_task/index';
 
 /**
  * The IUserTaskConsumerApi is used to retreive and manage UserTasks.
@@ -23,7 +23,7 @@ export interface IUserTaskApi {
    * @throws {ForbiddenError}    If the user is not allowed to access the
    *                             Correlation.
    */
-  getUserTasksForCorrelation(identity: IIdentity, correlationId: string): Promise<UserTaskList>;
+  getUserTasksForCorrelation<TTokenPayload>(identity: IIdentity, correlationId: string): Promise<Array<UserTask<TTokenPayload>>>;
 
   /**
    * Finishes a UserTask belonging to an instance of a specific ProcessModel
@@ -46,11 +46,11 @@ export interface IUserTaskApi {
    * @throws {NotFoundError}     If the ProcessInstance, the Correlation,
    *                             or the UserTask was not found.
    */
-  finishUserTask(
+  finishUserTask<TFormFieldValue>(
     identity: IIdentity,
     processInstanceId: string,
     correlationId: string,
     userTaskInstanceId: string,
-    userTaskResult: UserTaskResult,
+    userTaskResult: UserTaskResult<TFormFieldValue>,
   ): Promise<void>;
 }

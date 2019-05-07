@@ -1,4 +1,5 @@
 export class FlowNodeRuntimeInformation {
+
   public processModelId: string;
   public flowNodeId: string;
   public arithmeticMeanRuntimeInMs: number;
@@ -7,4 +8,5 @@ export class FlowNodeRuntimeInformation {
   public thirdQuartileRuntimeInMs: number;
   public minRuntimeInMs: number;
   public maxRuntimeInMs: number;
+
 }

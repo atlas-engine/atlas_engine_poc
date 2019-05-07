@@ -1,7 +1,7 @@
 import {IIdentity} from '@essential-projects/iam_contracts';
 
-export class ActiveToken {
-  // header
+export class ActiveToken<TPayload> {
+
   public processInstanceId: string;
   public processModelId: string;
   public correlationId: string;
@@ -9,6 +9,6 @@ export class ActiveToken {
   public flowNodeInstanceId: string;
   public identity: IIdentity;
   public createdAt: Date;
-  // payload
-  public payload: any;
+  public payload: TPayload;
+
 }
