@@ -6,15 +6,15 @@ import {BaseEventMessage} from '../base_event_message';
  * The message sent when a UserTask has been finished.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class UserTaskFinishedMessage<TCurrentToken, TUserTaskResult = any> extends BaseEventMessage<TCurrentToken> {
+export class UserTaskFinishedMessage<TCurrentToken> extends BaseEventMessage<TCurrentToken> {
 
   /**
    * The result the UserTask was finished with.
    */
-  public userTaskResult: UserTaskResult<TUserTaskResult>;
+  public userTaskResult: UserTaskResult;
 
   constructor(
-    userTaskResult: UserTaskResult<TUserTaskResult>,
+    userTaskResult: UserTaskResult,
     correlationId: string,
     processModelId: string,
     processInstanceId: string,

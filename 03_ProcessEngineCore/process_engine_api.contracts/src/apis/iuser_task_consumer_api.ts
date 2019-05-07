@@ -46,11 +46,11 @@ export interface IUserTaskApi {
    * @throws {NotFoundError}     If the ProcessInstance, the Correlation,
    *                             or the UserTask was not found.
    */
-  finishUserTask<TFormFieldValue>(
+  finishUserTask(
     identity: IIdentity,
     processInstanceId: string,
     correlationId: string,
     userTaskInstanceId: string,
-    userTaskResult: UserTaskResult<TFormFieldValue>,
+    userTaskResult: UserTaskResult,
   ): Promise<void>;
 }
