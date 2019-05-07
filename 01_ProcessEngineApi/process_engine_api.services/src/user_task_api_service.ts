@@ -1,7 +1,7 @@
 import * as EssentialProjectErrors from '@essential-projects/errors_ts';
 import {IEventAggregator} from '@essential-projects/event_aggregator_contracts';
 import {IIdentity} from '@essential-projects/iam_contracts';
-import {DataModels, IConsumerApi, Messages} from '@process-engine/consumer_api_contracts';
+import {APIs, DataModels, Messages} from '@process-engine/process_engine_api.contracts';
 import {
   FlowNodeInstance,
   IFlowNodeInstanceService,
@@ -10,31 +10,31 @@ import {FinishUserTaskMessage as InternalFinishUserTaskMessage} from '@process-e
 
 import {UserTaskConverter} from './converters/index';
 
-export class UserTaskApiService implements IConsumerApi {
+export class UserTaskApiService implements APIs.IUserTaskApi {
   public config: any = undefined;
 
-  private readonly _eventAggregator: IEventAggregator;
-  private readonly _flowNodeInstanceService: IFlowNodeInstanceService;
+  private readonly eventAggregator: IEventAggregator;
+  private readonly flowNodeInstanceService: IFlowNodeInstanceService;
 
-  private readonly _userTaskConverter: UserTaskConverter;
+  private readonly userTaskConverter: UserTaskConverter;
 
   constructor(
     eventAggregator: IEventAggregator,
     flowNodeInstanceService: IFlowNodeInstanceService,
     userTaskConverter: UserTaskConverter,
   ) {
-    this._eventAggregator = eventAggregator;
-    this._flowNodeInstanceService = flowNodeInstanceService;
-    this._userTaskConverter = userTaskConverter;
+    this.eventAggregator = eventAggregator;
+    this.flowNodeInstanceService = flowNodeInstanceService;
+    this.userTaskConverter = userTaskConverter;
   }
 
   // UserTasks
   public async getUserTasksForCorrelation(identity: IIdentity, correlationId: string): Promise<DataModels.UserTasks.UserTaskList> {
 
     const suspendedFlowNodes: Array<FlowNodeInstance> =
-      await this._flowNodeInstanceService.querySuspendedByCorrelation(correlationId);
+      await this.flowNodeInstanceService.querySuspendedByCorrelation(correlationId);
 
-    const userTaskList: DataModels.UserTasks.UserTaskList = await this._userTaskConverter.convertUserTasks(identity, suspendedFlowNodes);
+    const userTaskList: DataModels.UserTasks.UserTaskList = await this.userTaskConverter.convertUserTasks(identity, suspendedFlowNodes);
 
     return userTaskList;
   }
@@ -60,7 +60,7 @@ export class UserTaskApiService implements IConsumerApi {
     }
 
     const convertedUserTaskList: DataModels.UserTasks.UserTaskList =
-      await this._userTaskConverter.convertUserTasks(identity, [matchingFlowNodeInstance]);
+      await this.userTaskConverter.convertUserTasks(identity, [matchingFlowNodeInstance]);
 
     const matchingUserTask: DataModels.UserTasks.UserTask = convertedUserTaskList.userTasks[0];
 
@@ -71,7 +71,7 @@ export class UserTaskApiService implements IConsumerApi {
         .replace(Messages.EventAggregatorSettings.messageParams.processInstanceId, processInstanceId)
         .replace(Messages.EventAggregatorSettings.messageParams.flowNodeInstanceId, userTaskInstanceId);
 
-      this._eventAggregator.subscribeOnce(userTaskFinishedEvent, () => {
+      this.eventAggregator.subscribeOnce(userTaskFinishedEvent, () => {
         resolve();
       });
 
@@ -86,7 +86,7 @@ export class UserTaskApiService implements IConsumerApi {
   ): Promise<FlowNodeInstance> {
 
     const suspendedFlowNodeInstances: Array<FlowNodeInstance> =
-      await this._flowNodeInstanceService.querySuspendedByProcessInstance(processInstanceId);
+      await this.flowNodeInstanceService.querySuspendedByProcessInstance(processInstanceId);
 
     const matchingInstance: FlowNodeInstance = suspendedFlowNodeInstances.find((instance: FlowNodeInstance) => {
       return instance.id === instanceId &&
@@ -138,6 +138,6 @@ export class UserTaskApiService implements IConsumerApi {
       .replace(Messages.EventAggregatorSettings.messageParams.processInstanceId, userTaskInstance.processInstanceId)
       .replace(Messages.EventAggregatorSettings.messageParams.flowNodeInstanceId, userTaskInstance.flowNodeInstanceId);
 
-    this._eventAggregator.publish(finishUserTaskEvent, finishUserTaskMessage);
+    this.eventAggregator.publish(finishUserTaskEvent, finishUserTaskMessage);
   }
 }

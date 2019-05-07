@@ -2,7 +2,7 @@ import * as uuid from 'node-uuid';
 
 import * as EssentialProjectErrors from '@essential-projects/errors_ts';
 import {IIdentity} from '@essential-projects/iam_contracts';
-import {APIs, DataModels} from '@process-engine/consumer_api_contracts';
+import {APIs, DataModels} from '@process-engine/process_engine_api.contracts';
 import {IProcessModelUseCases, Model} from '@process-engine/process_model.contracts';
 import {
   EndEventReachedMessage,
@@ -14,29 +14,29 @@ import {
   ProcessModelConverter,
 } from './converters/index';
 
-export class ProcessModelApiService implements APIs.IProcessModelConsumerApi {
+export class ProcessModelApiService implements APIs.IProcessModelApi {
   public config: any = undefined;
 
-  private readonly _executeProcessService: IExecuteProcessService;
-  private readonly _processModelUseCase: IProcessModelUseCases;
-  private readonly _processModelConverter: ProcessModelConverter;
+  private readonly executeProcessService: IExecuteProcessService;
+  private readonly processModelUseCase: IProcessModelUseCases;
+  private readonly processModelConverter: ProcessModelConverter;
 
   constructor(
     executeProcessService: IExecuteProcessService,
     processModelUseCase: IProcessModelUseCases,
     processModelConverter: ProcessModelConverter,
   ) {
-    this._executeProcessService = executeProcessService;
-    this._processModelUseCase = processModelUseCase;
-    this._processModelConverter = processModelConverter;
+    this.executeProcessService = executeProcessService;
+    this.processModelUseCase = processModelUseCase;
+    this.processModelConverter = processModelConverter;
   }
 
   // Process models and instances
   public async getProcessModels(identity: IIdentity): Promise<DataModels.ProcessModels.ProcessModelList> {
 
-    const processModels: Array<Model.Process> = await this._processModelUseCase.getProcessModels(identity);
+    const processModels: Array<Model.Process> = await this.processModelUseCase.getProcessModels(identity);
     const consumerApiProcessModels: Array<DataModels.ProcessModels.ProcessModel> = processModels.map((processModel: Model.Process) => {
-      return this._processModelConverter.convertProcessModel(processModel);
+      return this.processModelConverter.convertProcessModel(processModel);
     });
 
     return <DataModels.ProcessModels.ProcessModelList> {
@@ -46,8 +46,8 @@ export class ProcessModelApiService implements APIs.IProcessModelConsumerApi {
 
   public async getProcessModelById(identity: IIdentity, processModelId: string): Promise<DataModels.ProcessModels.ProcessModel> {
 
-    const processModel: Model.Process = await this._processModelUseCase.getProcessModelById(identity, processModelId);
-    const consumerApiProcessModel: DataModels.ProcessModels.ProcessModel = this._processModelConverter.convertProcessModel(processModel);
+    const processModel: Model.Process = await this.processModelUseCase.getProcessModelById(identity, processModelId);
+    const consumerApiProcessModel: DataModels.ProcessModels.ProcessModel = this.processModelConverter.convertProcessModel(processModel);
 
     return consumerApiProcessModel;
   }
@@ -99,7 +99,7 @@ export class ProcessModelApiService implements APIs.IProcessModelConsumerApi {
     const resolveImmediatelyAfterStart: boolean = startCallbackType === DataModels.ProcessModels.StartCallbackType.CallbackOnProcessInstanceCreated;
     if (resolveImmediatelyAfterStart) {
       const startResult: ProcessStartedMessage =
-        await this._executeProcessService.start(identity, processModelId, correlationId, startEventId, payload.inputValues, payload.callerId);
+        await this.executeProcessService.start(identity, processModelId, correlationId, startEventId, payload.inputValues, payload.callerId);
 
       response.processInstanceId = startResult.processInstanceId;
 
@@ -113,7 +113,7 @@ export class ProcessModelApiService implements APIs.IProcessModelConsumerApi {
     if (resolveAfterReachingSpecificEndEvent) {
 
       processEndedMessage = await this
-        ._executeProcessService
+        .executeProcessService
         .startAndAwaitSpecificEndEvent(identity, processModelId, correlationId, endEventId, startEventId, payload.inputValues, payload.callerId);
 
       response.endEventId = processEndedMessage.flowNodeId;
@@ -125,7 +125,7 @@ export class ProcessModelApiService implements APIs.IProcessModelConsumerApi {
 
     // Start the process instance and wait for the first end event result
     processEndedMessage = await this
-      ._executeProcessService
+      .executeProcessService
       .startAndAwaitEndEvent(identity, processModelId, correlationId, startEventId, payload.inputValues, payload.callerId);
 
     response.endEventId = processEndedMessage.flowNodeId;

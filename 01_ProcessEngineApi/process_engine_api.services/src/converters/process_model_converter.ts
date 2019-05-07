@@ -1,18 +1,18 @@
-import {DataModels} from '@process-engine/consumer_api_contracts';
+import {DataModels} from '@process-engine/process_engine_api.contracts';
 import {IProcessModelFacade, IProcessModelFacadeFactory} from '@process-engine/process_engine_contracts';
 import {Model} from '@process-engine/process_model.contracts';
 
 export class ProcessModelConverter {
 
-  private _processModelFacadeFactory: IProcessModelFacadeFactory;
+  private processModelFacadeFactory: IProcessModelFacadeFactory;
 
   constructor(processModelFacadeFactory: IProcessModelFacadeFactory) {
-    this._processModelFacadeFactory = processModelFacadeFactory;
+    this.processModelFacadeFactory = processModelFacadeFactory;
   }
 
   public convertProcessModel(processModel: Model.Process): DataModels.ProcessModels.ProcessModel {
 
-    const processModelFacade: IProcessModelFacade = this._processModelFacadeFactory.create(processModel);
+    const processModelFacade: IProcessModelFacade = this.processModelFacadeFactory.create(processModel);
 
     function consumerApiEventConverter(event: Model.Events.Event): DataModels.Events.Event {
       const consumerApiEvent: DataModels.Events.Event = new DataModels.Events.Event();

@@ -4,9 +4,9 @@ import {Model} from '@process-engine/process_model.contracts';
  * Used to cache ProcessModels during conversion of suspended FlowNodeInstances.
  * This helps to avoid repeated queries against the database for the same ProcessModel.
  */
-type ProcessModelCache = {[cacheEntryKey: string]: Model.Process};
+interface IProcessModelCache {[cacheEntryKey: string]: Model.Process}
 
-const processModelCache: ProcessModelCache = {};
+const processModelCache: IProcessModelCache = {};
 
 export function hasEntry(cacheEntryKey: string): boolean {
   return processModelCache[cacheEntryKey] !== undefined;
