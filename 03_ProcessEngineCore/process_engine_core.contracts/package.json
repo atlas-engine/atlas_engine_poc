@@ -1,0 +1,35 @@
+{
+  "name": "@process-engine/process_engine_core.contracts",
+  "publishConfig": {
+    "registry": "https://www.npmjs.com"
+  },
+  "version": "1234.5.6",
+  "description": "The referencable contracts for the whole ProcessEngine.",
+  "license": "MIT",
+  "main": "dist/commonjs/index.js",
+  "typings": "dist/index.d.ts",
+  "contributors": [
+    "Christian Werner <christian.werner@5minds.de>"
+  ],
+  "dependencies": {
+    "@essential-projects/event_aggregator_contracts": "~4.0.0",
+    "@essential-projects/iam_contracts": "^3.4.2"
+  },
+  "devDependencies": {
+    "@essential-projects/eslint-config": "^1.0.0",
+    "@types/node": "^10.12.2",
+    "moment": "^2.24.0",
+    "tsconfig": "^7.0.0",
+    "typescript": "^3.3.3"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npm run clean && npm run build-commonjs && npm run build-amd",
+    "build-commonjs": "tsc",
+    "build-amd": "tsc --module amd --outDir ./dist/amd",
+    "prepare": "npm run build",
+    "lint": "eslint src/**/**/*.ts src/**/*.ts src/*.ts",
+    "lint-fix": "eslint --fix src/**/**/*.ts src/**/*.ts src/*.ts",
+    "test": ":"
+  }
+}
