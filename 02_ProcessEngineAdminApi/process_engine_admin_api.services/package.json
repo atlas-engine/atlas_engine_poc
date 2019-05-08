@@ -33,6 +33,7 @@
     "@essential-projects/eslint-config": "^1.0.0",
     "@types/bluebird-global": "^3.5.9",
     "@types/node": "^10.12.2",
+    "eslint": "^5.16.0",
     "tsconfig": "^7.0.0",
     "typescript": "^3.4.5"
   },
