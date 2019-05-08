@@ -1,8 +1,6 @@
 {
   "extends": "@essential-projects/eslint-config",
   "rules": {
-    "no-use-before-define": ["off"],
-    "arrow-body-style": ["off"],
     "@typescript-eslint/no-explicit-any": ["off"],
     "no-case-declarations": ["off"],
     "no-param-reassign": ["off"]
