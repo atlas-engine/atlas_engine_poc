@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {IIdentity} from '@essential-projects/iam_contracts';
 
-export class ActiveToken<TPayload> {
+export class ActiveToken {
 
   public processInstanceId: string;
   public processModelId: string;
@@ -9,6 +10,6 @@ export class ActiveToken<TPayload> {
   public flowNodeInstanceId: string;
   public identity: IIdentity;
   public createdAt: Date;
-  public payload: TPayload;
+  public payload: any;
 
 }

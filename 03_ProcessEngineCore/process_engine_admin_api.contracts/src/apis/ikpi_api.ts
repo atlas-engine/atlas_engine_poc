@@ -48,7 +48,7 @@ export interface IKpiApi {
    * @throws {UnauthorizedError} If the given identity does not contain a
    *                             valid auth token.
    */
-  getActiveTokensForProcessModel<TPayload>(identity: IIdentity, processModelId: string): Promise<Array<ActiveToken<TPayload>>>;
+  getActiveTokensForProcessModel(identity: IIdentity, processModelId: string): Promise<Array<ActiveToken>>;
 
   /**
    * Gets all active ProcessTokens for a given CorrelationId and ProcessModelId.
@@ -62,11 +62,11 @@ export interface IKpiApi {
    * @throws {UnauthorizedError} If the given identity does not contain a
    *                             valid auth token.
    */
-  getActiveTokensForCorrelationAndProcessModel<TPayload>(
+  getActiveTokensForCorrelationAndProcessModel(
     identity: IIdentity,
     correlationId: string,
     processModelId: string,
-  ): Promise<Array<ActiveToken<TPayload>>>;
+  ): Promise<Array<ActiveToken>>;
 
   /**
    * Gets all active ProcessTokens for a given ProcessInstanceId.
@@ -79,7 +79,7 @@ export interface IKpiApi {
    * @throws {UnauthorizedError} If the given identity does not contain a
    *                             valid auth token.
    */
-  getActiveTokensForProcessInstance<TPayload>(identity: IIdentity, processInstanceId: string): Promise<Array<ActiveToken<TPayload>>>;
+  getActiveTokensForProcessInstance(identity: IIdentity, processInstanceId: string): Promise<Array<ActiveToken>>;
 
   /**
    * Gets all active Tokens for a specific FlowNode inside a ProcessModel.
@@ -93,5 +93,5 @@ export interface IKpiApi {
    * @throws {UnauthorizedError} If the given identity does not contain a
    *                             valid auth token.
    */
-  getActiveTokensForFlowNode<TPayload>(identity: IIdentity, flowNodeId: string): Promise<Array<ActiveToken<TPayload>>>;
+  getActiveTokensForFlowNode(identity: IIdentity, flowNodeId: string): Promise<Array<ActiveToken>>;
 }
