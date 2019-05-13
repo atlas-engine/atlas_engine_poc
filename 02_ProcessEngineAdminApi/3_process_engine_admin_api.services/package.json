@@ -1,0 +1,48 @@
+{
+  "name": "@process-engine/process_engine_admin_api.services",
+  "version": "0.0.1",
+  "description": "service implementation for the ProcessEngine Admin API",
+  "main": "dist/commonjs/index.js",
+  "typings": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/process-engine/management_api_core.git"
+  },
+  "author": "5Minds IT-Solutions GmbH & Co. KG",
+  "contributors": [
+    "Christian Werner <christian.werner@5minds.de>"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/process-engine/management_api_core/issues"
+  },
+  "homepage": "https://github.com/process-engine/management_api_core#readme",
+  "dependencies": {
+    "@essential-projects/errors_ts": "^1.4.0",
+    "@essential-projects/iam_contracts": "^3.4.0",
+    "@process-engine/flow_node_instance.contracts": "^1.1.0",
+    "@process-engine/process_engine_admin_api.contracts": "feature~architecture_refactoring_poc",
+    "bluebird": "~3.5.2",
+    "bluebird-global": "~1.0.1",
+    "clone": "~2.1.2",
+    "moment": "~2.24.0"
+  },
+  "devDependencies": {
+    "@essential-projects/eslint-config": "^1.0.0",
+    "@types/bluebird-global": "^3.5.9",
+    "@types/node": "^10.12.2",
+    "eslint": "^5.16.0",
+    "tsconfig": "^7.0.0",
+    "typescript": "^3.4.5"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npm run clean && npm run build-commonjs && npm run build-amd",
+    "build-commonjs": "tsc",
+    "build-amd": "tsc --module amd --outDir ./dist/amd",
+    "prepare": "npm run build",
+    "lint": "eslint src/*.ts",
+    "lint-fix": "eslint --fix src/*.ts",
+    "test": ":"
+  }
+}

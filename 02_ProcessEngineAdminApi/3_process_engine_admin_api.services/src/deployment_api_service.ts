@@ -4,22 +4,14 @@ import * as path from 'path';
 import {UnauthorizedError} from '@essential-projects/errors_ts';
 import {IIdentity} from '@essential-projects/iam_contracts';
 
-import {APIs, DataModels} from '@process-engine/process_engine_admin_api.contracts';
-
-import {IProcessModelUseCases} from '@process-engine/process_model.contracts';
+import {APIs, DataModels, Repositories} from '@process-engine/process_engine_admin_api.contracts';
 
 export class DeploymentApiService implements APIs.IDeploymentApi {
 
-  private processModelUseCases: IProcessModelUseCases;
+  private deploymentApiRepository: Repositories.IDeploymentRepository;
 
-  constructor(processModelUseCases: IProcessModelUseCases) {
-    this.processModelUseCases = processModelUseCases;
-  }
-
-  public async importBpmnFromXml(identity: IIdentity, payload: DataModels.Deployment.ImportProcessDefinitionsRequestPayload): Promise<void> {
-    this.ensureIsAuthorized(identity);
-
-    await this.processModelUseCases.persistProcessDefinitions(identity, payload.name, payload.xml, payload.overwriteExisting);
+  constructor(deploymentApiRepository: Repositories.IDeploymentRepository) {
+    this.deploymentApiRepository = deploymentApiRepository;
   }
 
   public async importBpmnFromFile(
@@ -47,10 +39,16 @@ export class DeploymentApiService implements APIs.IDeploymentApi {
     await this.importBpmnFromXml(identity, importPayload);
   }
 
+  public async importBpmnFromXml(identity: IIdentity, payload: DataModels.Deployment.ImportProcessDefinitionsRequestPayload): Promise<void> {
+    this.ensureIsAuthorized(identity);
+
+    await this.deploymentApiRepository.deploy(identity, payload);
+  }
+
   public async undeploy(identity: IIdentity, processModelId: string): Promise<void> {
     this.ensureIsAuthorized(identity);
 
-    return this.processModelUseCases.deleteProcessModel(identity, processModelId);
+    await this.deploymentApiRepository.undeploy(identity, processModelId);
   }
 
   private async getXmlFromFile(filePath: string): Promise<string> {
