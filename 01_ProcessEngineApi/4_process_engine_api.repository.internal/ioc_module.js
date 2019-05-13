@@ -1,9 +1,9 @@
 'use strict';
 
 const {
-  ProcessModelApiService,
+  ProcessModelApiRepository,
   ProcessModelConverter,
-  UserTaskApiService,
+  UserTaskApiRepository,
   UserTaskConverter,
 } = require('./dist/commonjs/index');
 
@@ -20,7 +20,7 @@ function registerInContainer(container) {
     .singleton();
 
   container
-    .register('ProcessModelApiService', ProcessModelApiService)
+    .register('ProcessModelApiRepository', ProcessModelApiRepository)
     .dependencies(
       'ExecuteProcessService',
       'ProcessModelUseCases',
@@ -28,7 +28,7 @@ function registerInContainer(container) {
     .singleton();
 
   container
-    .register('UserTaskApiService', UserTaskApiService)
+    .register('UserTaskApiRepository', UserTaskApiRepository)
     .dependencies(
       'EventAggregator',
       'FlowNodeInstanceService',

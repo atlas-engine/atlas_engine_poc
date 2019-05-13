@@ -11,7 +11,7 @@ import {
 
 import {ProcessModelConverter} from './converters/index';
 
-export class ProcessModelApiService implements APIs.IProcessModelApi {
+export class ProcessModelApiRepository implements APIs.IProcessModelApi {
 
   private readonly executeProcessService: IExecuteProcessService;
   private readonly processModelUseCase: IProcessModelUseCases;

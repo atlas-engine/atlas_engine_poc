@@ -11,7 +11,7 @@ import {FinishUserTaskMessage as InternalFinishUserTaskMessage} from '@process-e
 
 import {UserTaskConverter} from './converters/index';
 
-export class UserTaskApiService implements APIs.IUserTaskApi {
+export class UserTaskApiRepository implements APIs.IUserTaskApi {
 
   private readonly eventAggregator: IEventAggregator;
   private readonly flowNodeInstanceService: IFlowNodeInstanceService;
