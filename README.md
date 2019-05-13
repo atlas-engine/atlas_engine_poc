@@ -82,7 +82,10 @@ Der interne Zuschnitt dieser APIs kann durchaus auf mehrere Klassen aufgeteilt w
 
 Was die API Clients betrifft, so ergeben sich folgende Änderungen:
 
-**ExternalTaskApiClient** und **ConsumerApiClient** werden zum **ProcessEngineClient** zusammengefasst.
+Der **ConsumerApiClient** wird zum **ProcessEngineClient**.
+
+Der **ExternalTaskApiClient** bleibt wie er ist.
+Wenngleich die ExternalTaskApi mit der ConsumerApi zusammengelegt werden kann, so sollten die zugehörigen Clients weiterhin separat betrachtet werden, da es signifikante Unterschiede in deren Funktionsweise und Anwendungsbereich gibt.
 
 Der **ManagementApiClient** wird in **ProcessEngineAdminClient** umbenannt und behält seine bisherigen Funktionalitäten bei.
 
@@ -91,6 +94,9 @@ Stattdessen wird es jeweils zwei separate Clients geben:
 
 - Einen für den Zugriff auf eine in die Anwendung integrierte ProcessEngine
 - Einen für den Zugriff auf eine externe ProcessEngine per HTTP
+
+Der Client für externe ProcessEngines sollte zudem selbst dafür sorgen, dass der von ihm benötigte HttpClient korrekt initialisiert wird.
+Bisher wird erwartet, dass ein vollständig initialisierter HttpClient per IoC injected wird. Das ist jedoch wenig Benutzerfreundlich, nicht zuletzt auch deswegen, da so ein doppelter Pflegeaufwand für die Config betrieben werden muss (eine Config für den ProcessEngineClient und eine für den HttpClient).
 
 Ursprünglich sollten die Accessors dabei behilflich sein, Änderungen in einer externen Anwendung auf ein Minimum zu reduzieren, falls sich die Art und Weise ändert in welcher diese mit einer ProcessEngine kommuniziert.
 
