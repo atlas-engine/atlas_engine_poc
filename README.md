@@ -147,8 +147,6 @@ Folgende Fragen sind noch zu klären:
 - Finaler Paketzuschnitt bei npm?
 - Welche API wird final für die Ausführung der untypisierten Activites zuständig sein?
 - Evtl. neue Orga aufsetzen, da viele Paketnamen bei npm mittlerweile belegt sind?
-- Könnte man die Pakete aus @essential-projects evtl. direkt mit in die Runtime Komponenten von @process-engine integrieren?
-    - Nicht wichtig für dieses Refactoring, jedoch sind gut ¾ der Repositories in @essential-projects mittlerweile archiviert, so dass sich die Frage stellt, inwieweit es überhaupt Sinn macht diese Orga weiter zu pflegen.
 
 Ebenfalls gilt es noch zu klären inwieweit die Komponenten (Public APIs, ProcessEngine, Runtime Layer) voneinander getrennt werden.
 Erfolgt nur eine logische Trennung, anhand von NPM Paketen und/oder Github Repositories, so kann dies ohne großen Mehraufwand geschehen.
