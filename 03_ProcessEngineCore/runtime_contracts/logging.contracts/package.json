@@ -1,0 +1,43 @@
+{
+  "name": "@process-engine/logging.contracts",
+  "publishConfig": {
+    "registry": "https://www.npmjs.com"
+  },
+  "version": "1.0.3",
+  "description": "Contains the contracts for the ProcessEngine's logging API.",
+  "license": "MIT",
+  "main": "dist/commonjs/index.js",
+  "typings": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/process-engine/logging.contracts.git"
+  },
+  "author": "5Minds IT-Solutions GmbH & Co. KG",
+  "contributors": [
+    "Christian Werner <christian.werner@5minds.de>"
+  ],
+  "bugs": {
+    "url": "https://github.com/process-engine/logging.contracts/issues"
+  },
+  "homepage": "https://github.com/process-engine/logging.contracts#readme",
+  "dependencies": {
+    "@essential-projects/iam_contracts": "^3.4.0"
+  },
+  "devDependencies": {
+    "@essential-projects/eslint-config": "^1.0.0",
+    "@types/node": "^10.12.2",
+    "eslint": "^5.16.0",
+    "tsconfig": "^7.0.0",
+    "typescript": "^3.1.6"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npm run clean && npm run build-commonjs && npm run build-amd",
+    "build-commonjs": "tsc",
+    "build-amd": "tsc --module amd --outDir ./dist/amd",
+    "prepare": "npm run build",
+    "lint": "eslint src/*.ts",
+    "lint-fix": "eslint --fix src/*.ts",
+    "test": ":"
+  }
+}
