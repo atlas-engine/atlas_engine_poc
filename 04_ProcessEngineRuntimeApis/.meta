@@ -1,17 +1,11 @@
 {
   "projects": {
-    "correlation.service": "git@github.com:process-engine/correlation.service.git",
-    "correlation.repository.sequelize": "git@github.com:process-engine/correlation.repository.sequelize.git",
-    "external_task.service": "git@github.com:process-engine/external_task.service.git",
-    "external_task.repository.sequelize": "git@github.com:process-engine/external_task.repository.sequelize.git",
-    "flow_node_instance.service": "git@github.com:process-engine/flow_node_instance.service.git",
-    "flow_node_instance.repository.sequelize": "git@github.com:process-engine/flow_node_instance.repository.sequelize.git",
-    "logging.service": "git@github.com:process-engine/logging.service.git",
-    "logging.repository.file_system": "git@github.com:process-engine/logging.repository.file_system.git",
-    "metrics.service": "git@github.com:process-engine/metrics.service.git",
-    "metrics.repository.file_system": "git@github.com:process-engine/metrics.repository.file_system.git",
-    "process_model.use_cases": "git@github.com:process-engine/process_model.use_cases.git",
-    "process_model.service": "git@github.com:process-engine/process_model.service.git",
-    "process_model.repository.sequelize": "git@github.com:process-engine/process_model.repository.sequelize.git"
+    "logging.service": "/logging.service.git",
+    "logging.repository.file_system": "/logging.repository.file_system.git",
+    "metrics.service": "/metrics.service.git",
+    "metrics.repository.file_system": "/metrics.repository.file_system.git",
+    "persistence_api.use_cases": "/persistence_api.use_cases.git",
+    "persistence_api.service": "/persistence_api.service.git",
+    "persistence_api.repository.sequelize": "/persistence_api.repository.sequelize.git"
   }
 }
