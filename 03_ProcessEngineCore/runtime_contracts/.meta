@@ -1,0 +1,10 @@
+{
+  "projects": {
+    "correlation.contracts": "/correlation.contracts.git",
+    "external_task_api_contracts": "/external_task_api_contracts.git",
+    "flow_node_instance.contracts": "/flow_node_instance.contracts.git",
+    "logging.contracts": "/logging.contracts.git",
+    "metrics.contracts": "/metrics.contracts.git",
+    "process_model.contracts": "/process_model.contracts.git"
+  }
+}

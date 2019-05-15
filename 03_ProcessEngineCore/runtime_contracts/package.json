@@ -1,0 +1,19 @@
+{
+  "name": "@process-engine/process_engine_runtime_contracts_meta",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "meta exec \"npm run build\" --exclude runtime_contracts",
+    "lint": "meta exec \"npm run lint\" --exclude runtime_contracts",
+    "lint-fix": "meta exec \"npm run lint-fix\" --exclude runtime_contracts",
+    "postinstall": "minstall --no-hoist aurelia-* --trust-local-modules .",
+    "reinstall": "./reinstall.sh"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "meta-npm": "0.0.18",
+    "minstall": "^3.3.0"
+  }
+}
