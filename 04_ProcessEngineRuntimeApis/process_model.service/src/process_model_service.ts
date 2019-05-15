@@ -36,11 +36,12 @@ export class ProcessModelService implements IProcessModelService {
     this._bpmnModelParser = bpmnModelParser;
   }
 
-  public async persistProcessDefinitions(identity: IIdentity,
-                                         name: string,
-                                         xml: string,
-                                         overwriteExisting: boolean = true,
-                                       ): Promise<void> {
+  public async persistProcessDefinitions(
+    identity: IIdentity,
+    name: string,
+    xml: string,
+    overwriteExisting: boolean = true,
+  ): Promise<void> {
 
     await this._iamService.ensureHasClaim(identity, this._canWriteProcessModelClaim);
     await this._validateDefinition(name, xml);
@@ -136,7 +137,7 @@ export class ProcessModelService implements IProcessModelService {
       parsedProcessDefinition = await this._bpmnModelParser.parseXmlToObjectModel(xml);
     } catch (error) {
       logger.error(`The XML for process "${name}" could not be parsed: ${error.message}`);
-      const errorMessage: string = `The XML for process "${name}" could not be parsed.`;
+      const errorMessage = `The XML for process "${name}" could not be parsed.`;
       const parsingError: UnprocessableEntityError = new UnprocessableEntityError(errorMessage);
 
       parsingError.additionalInformation = error;
@@ -146,7 +147,7 @@ export class ProcessModelService implements IProcessModelService {
 
     const processDefinitionHasMoreThanOneProcessModel: boolean = parsedProcessDefinition.processes.length > 1;
     if (processDefinitionHasMoreThanOneProcessModel) {
-      const tooManyProcessModelsError: string = `The XML for process "${name}" contains more than one ProcessModel. This is currently not supported.`;
+      const tooManyProcessModelsError = `The XML for process "${name}" contains more than one ProcessModel. This is currently not supported.`;
       logger.error(tooManyProcessModelsError);
 
       throw new UnprocessableEntityError(tooManyProcessModelsError);
@@ -156,7 +157,7 @@ export class ProcessModelService implements IProcessModelService {
 
     const processModelIdIsNotEqualToDefinitionName: boolean = processsModel.id !== name;
     if (processModelIdIsNotEqualToDefinitionName) {
-      const namesDoNotMatchError: string = `The ProcessModel contained within the diagram "${name}" must also use the name "${name}"!`;
+      const namesDoNotMatchError = `The ProcessModel contained within the diagram "${name}" must also use the name "${name}"!`;
       logger.error(namesDoNotMatchError);
 
       throw new UnprocessableEntityError(namesDoNotMatchError);
@@ -215,7 +216,7 @@ export class ProcessModelService implements IProcessModelService {
 
     const definitionsRaw: Array<ProcessDefinitionFromRepository> = await this._processDefinitionRepository.getProcessDefinitions();
 
-    const definitionsMapper: any = async(rawProcessModelData: ProcessDefinitionFromRepository): Promise<Model.Definitions> => {
+    const definitionsMapper: any = async (rawProcessModelData: ProcessDefinitionFromRepository): Promise<Model.Definitions> => {
       return this._bpmnModelParser.parseXmlToObjectModel(rawProcessModelData.xml);
     };
 
@@ -236,13 +237,14 @@ export class ProcessModelService implements IProcessModelService {
    * @param   processModelId The ID of the ProcessModel to filter.
    * @returns                The filtered ProcessModel.
    */
-  private async _filterInaccessibleProcessModelElements(identity: IIdentity,
-                                                        processModel: Model.Process,
-                                                       ): Promise<Model.Process> {
+  private async _filterInaccessibleProcessModelElements(
+    identity: IIdentity,
+    processModel: Model.Process,
+  ): Promise<Model.Process> {
 
     const processModelCopy: Model.Process = clone(processModel);
 
-    const processModelHasNoLanes: boolean = !(processModel.laneSet && processModel.laneSet.lanes && processModel.laneSet.lanes.length > 0);
+    const processModelHasNoLanes = !(processModel.laneSet && processModel.laneSet.lanes && processModel.laneSet.lanes.length > 0);
     if (processModelHasNoLanes) {
       return processModelCopy;
     }
@@ -275,7 +277,7 @@ export class ProcessModelService implements IProcessModelService {
 
     for (const lane of laneSet.lanes) {
 
-      const userCanNotAccessLane: boolean = !await this._checkIfUserCanAccesslane(identity, lane.name);
+      const userCanNotAccessLane = !await this._checkIfUserCanAccesslane(identity, lane.name);
       const filteredLane: Model.ProcessElements.Lane = clone(lane);
 
       if (userCanNotAccessLane) {
@@ -376,4 +378,5 @@ export class ProcessModelService implements IProcessModelService {
 
     return processModelHasAccessibleStartEvent;
   }
+
 }

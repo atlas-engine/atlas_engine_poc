@@ -59,9 +59,10 @@ export class FlowNodeInstanceService implements IFlowNodeInstanceService {
     return this._flowNodeInstanceRepository.queryActiveByProcessInstance(processInstanceId);
   }
 
-  public async queryActiveByCorrelationAndProcessModel(correlationId: string,
-                                                       processModelId: string,
-                                                      ): Promise<Array<FlowNodeInstance>> {
+  public async queryActiveByCorrelationAndProcessModel(
+    correlationId: string,
+    processModelId: string,
+  ): Promise<Array<FlowNodeInstance>> {
     return this._flowNodeInstanceRepository.queryActiveByCorrelationAndProcessModel(correlationId, processModelId);
   }
 
@@ -81,36 +82,40 @@ export class FlowNodeInstanceService implements IFlowNodeInstanceService {
     return this._flowNodeInstanceRepository.queryProcessTokensByProcessInstanceId(processInstanceId);
   }
 
-  public async persistOnEnter(flowNode: FlowNode,
-                              flowNodeInstanceId: string,
-                              token: ProcessToken,
-                              previousFlowNodeInstanceId: string,
-                             ): Promise<FlowNodeInstance> {
+  public async persistOnEnter(
+    flowNode: FlowNode,
+    flowNodeInstanceId: string,
+    token: ProcessToken,
+    previousFlowNodeInstanceId: string,
+  ): Promise<FlowNodeInstance> {
 
     return this._flowNodeInstanceRepository.persistOnEnter(flowNode, flowNodeInstanceId, token, previousFlowNodeInstanceId);
   }
 
-  public async persistOnExit(flowNode: FlowNode,
-                             flowNodeInstanceId: string,
-                             token: ProcessToken,
-                            ): Promise<FlowNodeInstance> {
+  public async persistOnExit(
+    flowNode: FlowNode,
+    flowNodeInstanceId: string,
+    token: ProcessToken,
+  ): Promise<FlowNodeInstance> {
 
     return this._flowNodeInstanceRepository.persistOnExit(flowNode, flowNodeInstanceId, token);
   }
 
-  public async persistOnError(flowNode: FlowNode,
-                              flowNodeInstanceId: string,
-                              token: ProcessToken,
-                              error: Error,
-                             ): Promise<FlowNodeInstance> {
+  public async persistOnError(
+    flowNode: FlowNode,
+    flowNodeInstanceId: string,
+    token: ProcessToken,
+    error: Error,
+  ): Promise<FlowNodeInstance> {
 
     return this._flowNodeInstanceRepository.persistOnError(flowNode, flowNodeInstanceId, token, error);
   }
 
-  public async persistOnTerminate(flowNode: FlowNode,
-                                  flowNodeInstanceId: string,
-                                  token: ProcessToken,
-                                 ): Promise<FlowNodeInstance> {
+  public async persistOnTerminate(
+    flowNode: FlowNode,
+    flowNodeInstanceId: string,
+    token: ProcessToken,
+  ): Promise<FlowNodeInstance> {
 
     return this._flowNodeInstanceRepository.persistOnTerminate(flowNode, flowNodeInstanceId, token);
   }

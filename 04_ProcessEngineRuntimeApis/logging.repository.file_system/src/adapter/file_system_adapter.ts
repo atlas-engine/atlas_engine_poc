@@ -50,7 +50,7 @@ export async function writeToLogFile(targetFilePath: string, entry: string): Pro
   return new Promise<void>((resolve: Function, reject: Function): void => {
     const fileStream: fs.WriteStream = fs.createWriteStream(targetFilePath, {flags: 'a'});
 
-     // Note: using "end" instead of "write" will result in the stream being closed immediately afterwards, thus releasing the file.
+    // Note: using "end" instead of "write" will result in the stream being closed immediately afterwards, thus releasing the file.
     fileStream.end(`${entry}\n`, 'utf-8', () => {
       return resolve();
     });

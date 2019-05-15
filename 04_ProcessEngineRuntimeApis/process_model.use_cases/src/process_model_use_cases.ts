@@ -60,7 +60,7 @@ export class ProcessModelUseCases implements IProcessModelUseCases {
   }
 
   public async persistProcessDefinitions(identity: IIdentity, name: string, xml: string, overwriteExisting?: boolean): Promise<void> {
-   return this._processModelService.persistProcessDefinitions(identity, name, xml, overwriteExisting);
+    return this._processModelService.persistProcessDefinitions(identity, name, xml, overwriteExisting);
   }
 
   public async getProcessModelById(identity: IIdentity, processModelId: string): Promise<Model.Process> {
@@ -78,4 +78,5 @@ export class ProcessModelUseCases implements IProcessModelUseCases {
   public async getProcessModels(identity: IIdentity): Promise<Array<Model.Process>> {
     return this._processModelService.getProcessModels(identity);
   }
+
 }

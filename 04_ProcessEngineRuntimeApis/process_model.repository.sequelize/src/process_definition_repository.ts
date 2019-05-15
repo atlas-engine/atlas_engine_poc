@@ -60,7 +60,7 @@ export class ProcessDefinitionRepository implements IProcessDefinitionRepository
       where: {
         name: name,
       },
-      order: [ [ 'createdAt', 'DESC' ]],
+      order: [['createdAt', 'DESC']],
     };
 
     const newProcessDefinitionHash: string = await this._createHashForProcessDefinition(xml);
@@ -138,7 +138,7 @@ export class ProcessDefinitionRepository implements IProcessDefinitionRepository
       where: {
         name: name,
       },
-      order: [ [ 'createdAt', 'DESC' ]],
+      order: [['createdAt', 'DESC']],
     };
 
     const definitions: Array<ProcessDefinitionModel> = await ProcessDefinitionModel.findAll(query);
@@ -168,7 +168,7 @@ export class ProcessDefinitionRepository implements IProcessDefinitionRepository
       where: {
         name: name,
       },
-      order: [ [ 'createdAt', 'DESC' ]],
+      order: [['createdAt', 'DESC']],
     };
 
     const definitions: Array<ProcessDefinitionModel> = await ProcessDefinitionModel.findAll(query);
@@ -222,7 +222,7 @@ export class ProcessDefinitionRepository implements IProcessDefinitionRepository
     //
     // Process Definitions won't be persisted that often,
     // so 4 rounds should be a reasonable compromise between security and speed.
-    const saltRounds: number = 4;
+    const saltRounds = 4;
 
     const hashedXml: string = await bcrypt.hashSync(xml, saltRounds);
 
@@ -248,4 +248,5 @@ export class ProcessDefinitionRepository implements IProcessDefinitionRepository
 
     return processDefinition;
   }
+
 }

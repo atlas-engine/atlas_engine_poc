@@ -1,7 +1,9 @@
 import * as moment from 'moment';
 import * as path from 'path';
 
-import {IMetricsRepository, Metric, MetricMeasurementPoint, ProcessToken} from '@process-engine/metrics_api_contracts';
+import {
+  IMetricsRepository, Metric, MetricMeasurementPoint, ProcessToken,
+} from '@process-engine/metrics_api_contracts';
 
 import * as FileSystemAdapter from './adapter';
 
@@ -11,7 +13,7 @@ export class MetricsRepository implements IMetricsRepository {
 
   public async readMetricsForProcessModel(processModelId: string): Promise<Array<Metric>> {
 
-    const fileNameWithExtension: string = `${processModelId}.met`;
+    const fileNameWithExtension = `${processModelId}.met`;
 
     const metricFilePath: string = this._buildPath(fileNameWithExtension);
 
@@ -25,11 +27,13 @@ export class MetricsRepository implements IMetricsRepository {
     return metrics;
   }
 
-  public async writeMetricForProcessModel(correlationId: string,
-                                          processModelId: string,
-                                          metricType: MetricMeasurementPoint,
-                                          timestamp: moment.Moment,
-                                          error?: Error): Promise<void> {
+  public async writeMetricForProcessModel(
+    correlationId: string,
+    processModelId: string,
+    metricType: MetricMeasurementPoint,
+    timestamp: moment.Moment,
+    error?: Error,
+  ): Promise<void> {
 
     const metricValues: Array<string> =
       ['ProcessModel', timestamp.toISOString(), correlationId, processModelId, '', '', metricType, '{}'];
@@ -42,14 +46,16 @@ export class MetricsRepository implements IMetricsRepository {
     await this._writeMetricToFileSystem(processModelId, ...metricValues);
   }
 
-  public async writeMetricForFlowNode(correlationId: string,
-                                      processModelId: string,
-                                      flowNodeInstanceId: string,
-                                      flowNodeId: string,
-                                      metricType: MetricMeasurementPoint,
-                                      token: ProcessToken,
-                                      timestamp: moment.Moment,
-                                      error?: Error): Promise<void> {
+  public async writeMetricForFlowNode(
+    correlationId: string,
+    processModelId: string,
+    flowNodeInstanceId: string,
+    flowNodeId: string,
+    metricType: MetricMeasurementPoint,
+    token: ProcessToken,
+    timestamp: moment.Moment,
+    error?: Error,
+  ): Promise<void> {
 
     const stringyfiedToken: string = JSON.stringify(token);
 
@@ -66,7 +72,7 @@ export class MetricsRepository implements IMetricsRepository {
 
   private async _writeMetricToFileSystem(processModelId: string, ...metricValues: Array<string>): Promise<void> {
 
-    const filePathWithExtension: string = `${processModelId}.met`;
+    const filePathWithExtension = `${processModelId}.met`;
     const targetFilePath: string = this._buildPath(filePathWithExtension);
 
     const metricEntryAsString: string = this._buildMetricString(...metricValues);

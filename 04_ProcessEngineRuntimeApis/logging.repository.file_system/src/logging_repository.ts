@@ -11,7 +11,7 @@ export class LoggingRepository implements ILoggingRepository {
 
   public async readLogForProcessModel(processModelId: string): Promise<Array<LogEntry>> {
 
-    const fileNameWithExtension: string = `${processModelId}.log`;
+    const fileNameWithExtension = `${processModelId}.log`;
 
     const logFilePath: string = this._buildPath(fileNameWithExtension);
 
@@ -25,12 +25,14 @@ export class LoggingRepository implements ILoggingRepository {
     return correlationLogs;
   }
 
-  public async writeLogForProcessModel(correlationId: string,
-                                       processModelId: string,
-                                       processInstanceId: string,
-                                       logLevel: LogLevel,
-                                       message: string,
-                                       timestamp: Date): Promise<void> {
+  public async writeLogForProcessModel(
+    correlationId: string,
+    processModelId: string,
+    processInstanceId: string,
+    logLevel: LogLevel,
+    message: string,
+    timestamp: Date,
+  ): Promise<void> {
 
     const timeStampAsIsoString: string = moment(timestamp).toISOString();
 
@@ -39,14 +41,16 @@ export class LoggingRepository implements ILoggingRepository {
     await this._writeLogEntryToFileSystem(processModelId, ...logEntryValues);
   }
 
-  public async writeLogForFlowNode(correlationId: string,
-                                   processModelId: string,
-                                   processInstanceId: string,
-                                   flowNodeInstanceId: string,
-                                   flowNodeId: string,
-                                   logLevel: LogLevel,
-                                   message: string,
-                                   timestamp: Date): Promise<void> {
+  public async writeLogForFlowNode(
+    correlationId: string,
+    processModelId: string,
+    processInstanceId: string,
+    flowNodeInstanceId: string,
+    flowNodeId: string,
+    logLevel: LogLevel,
+    message: string,
+    timestamp: Date,
+  ): Promise<void> {
 
     const timeStampAsIsoString: string = moment(timestamp).toISOString();
 
@@ -57,7 +61,7 @@ export class LoggingRepository implements ILoggingRepository {
 
   private async _writeLogEntryToFileSystem(processModelId: string, ...values: Array<string>): Promise<void> {
 
-    const fileNameWithExtension: string = `${processModelId}.log`;
+    const fileNameWithExtension = `${processModelId}.log`;
 
     const targetFilePath: string = this._buildPath(fileNameWithExtension);
 
