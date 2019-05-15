@@ -10,17 +10,17 @@ export enum ProcessTokenType {
    * The token that was passed to the FlowNodeInstance when it started execution.
    */
   onEnter = 'onEnter',
-  
+
   /**
    * The token the FlowNodeInstance had when it finished execution.
    */
   onExit = 'onExit',
-  
+
   /**
    * The token the FlowNodeInstance had when it was suspended.
    */
   onSuspend = 'onSuspend',
-  
+
   /**
    * The token the FlowNodeInstance had when it was resumed.
    * These type of tokens will only ever exist, if a corresponding

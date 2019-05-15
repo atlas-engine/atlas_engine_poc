@@ -13,6 +13,7 @@ import {ProcessToken} from './process_token';
  * actual log file.
  */
 export class Metric {
+
   public timeStamp: moment.Moment;
   public correlationId: string;
   public processModelId: string;
@@ -20,4 +21,5 @@ export class Metric {
   public flowNodeId?: string;
   public metricType: MetricMeasurementPoint;
   public processToken: ProcessToken;
+
 }

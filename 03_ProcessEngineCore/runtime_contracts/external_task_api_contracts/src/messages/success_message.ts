@@ -8,4 +8,5 @@ export class ExternalTaskSuccessMessage {
   constructor(result: any) {
     this.result = result;
   }
+
 }

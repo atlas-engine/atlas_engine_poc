@@ -6,6 +6,7 @@ import {ExtensionElements} from './extension_elements';
  */
 // tslint:disable:max-classes-per-file
 export abstract class FlowNode {
+
   public id: string;
   public documentation?: Array<string>;
   public extensionElements?: ExtensionElements;
@@ -14,4 +15,5 @@ export abstract class FlowNode {
   public incoming: Array<string> = [];
   public outgoing: Array<string> = [];
   public defaultOutgoingSequenceFlowId?: string;
+
 }

@@ -69,4 +69,5 @@ export class IntermediateCatchEvent extends Event {
    * of the timer that is used to pause the execution.
    */
   public timerEventDefinition?: TimerEventDefinition;
+
 }

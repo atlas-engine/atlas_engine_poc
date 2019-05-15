@@ -11,27 +11,25 @@ import {
  * Describes a BPMN StartEvent.
  */
 export class StartEvent extends Event {
+
   public get bpmnType(): BpmnType {
     return BpmnType.startEvent;
   }
 
   public get eventType(): EventType {
-    const eventIsMessageEvent: boolean = this.messageEventDefinition !== undefined &&
-                                         this.messageEventDefinition !== null;
+    const eventIsMessageEvent: boolean = this.messageEventDefinition !== undefined;
     if (eventIsMessageEvent) {
 
       return EventType.messageEvent;
     }
 
-    const eventIsSignalEvent: boolean = this.signalEventDefinition !== undefined &&
-                                        this.signalEventDefinition !== null;
+    const eventIsSignalEvent: boolean = this.signalEventDefinition !== undefined;
     if (eventIsSignalEvent) {
 
       return EventType.signalEvent;
     }
 
-    const eventIsTimerEvent: boolean = this.timerEventDefinition !== undefined &&
-                                       this.timerEventDefinition !== null;
+    const eventIsTimerEvent: boolean = this.timerEventDefinition !== undefined;
     if (eventIsTimerEvent) {
 
       return EventType.timerEvent;

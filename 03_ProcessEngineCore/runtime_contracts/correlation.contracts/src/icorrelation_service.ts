@@ -32,11 +32,11 @@ export interface ICorrelationService {
    *                                ProcessInstance that started it.
    */
   createEntry(identity: IIdentity,
-              correlationId: string,
-              processInstanceId: string,
-              processModelId: string,
-              processModelHash: string,
-              parentProcessInstanceId?: string): Promise<void>;
+    correlationId: string,
+    processInstanceId: string,
+    processModelId: string,
+    processModelHash: string,
+    parentProcessInstanceId?: string): Promise<void>;
 
   /**
    * Returns a list of all Correlations.

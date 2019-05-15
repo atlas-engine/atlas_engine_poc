@@ -11,16 +11,19 @@ import {Activity} from './activity';
  * unlike the subprocess contained within the 'SubProcess' Activity.
  */
 export class CallActivity extends Activity {
+
   public get bpmnType(): BpmnType {
     return BpmnType.callActivity;
   }
+
   public type: CallActivityType = CallActivityType.Unspecified;
   public calledReference?: string;
   public bindingType: CallActivityBindingType = CallActivityBindingType.deployment;
   public calledElementVersion?: string;
   public calledElementTenantId: string;
   public delegateVariableMapping: CallActivityDelegateVariableMapping = CallActivityDelegateVariableMapping.Unspecified;
-  public variableMappingValue?: String;
+  public variableMappingValue?: string;
+
 }
 
 /**

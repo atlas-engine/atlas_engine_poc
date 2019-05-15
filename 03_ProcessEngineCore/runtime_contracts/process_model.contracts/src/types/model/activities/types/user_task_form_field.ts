@@ -7,6 +7,7 @@ import {FormFieldEnumValue} from './form_field_enum_value';
  * These values can then be used to finish the UserTask.
  */
 export class UserTaskFormField {
+
   /**
    * The UserTasks unique identifier.
    */
@@ -42,4 +43,5 @@ export class UserTaskFormField {
    * something similar.
    */
   public preferredControl?: string;
+
 }

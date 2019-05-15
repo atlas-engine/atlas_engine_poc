@@ -12,13 +12,15 @@ import {Activity} from './activity';
  * ReceiveTask was fetched.
  */
 export class SendTask extends Activity {
+
   public get bpmnType(): BpmnType {
     return BpmnType.sendTask;
   }
 
- /**
+  /**
    * This property contains the user defined message which should be
    * send to a receive task.
-  ‚*/
+  ‚ */
   public messageEventDefinition: MessageEventDefinition;
+
 }

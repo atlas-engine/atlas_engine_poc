@@ -8,4 +8,5 @@ export class ExternalTaskErrorMessage {
   constructor(error: Error) {
     this.error = error;
   }
+
 }

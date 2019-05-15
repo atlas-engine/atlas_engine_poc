@@ -36,10 +36,10 @@ export interface IMetricsRepository {
    *                       Defaults to "now".
    */
   writeMetricForProcessModel(correlationId: string,
-                             processModelId: string,
-                             metricType: MetricMeasurementPoint,
-                             timestamp: moment.Moment,
-                             error?: Error): Promise<void>;
+    processModelId: string,
+    metricType: MetricMeasurementPoint,
+    timestamp: moment.Moment,
+    error?: Error): Promise<void>;
 
   /**
    * Writes a metric for a specific FlowNode of a ProcessModel within a
@@ -63,11 +63,11 @@ export interface IMetricsRepository {
    *                           Defaults to "now".
    */
   writeMetricForFlowNode(correlationId: string,
-                         processModelId: string,
-                         flowNodeInstanceId: string,
-                         flowNodeId: string,
-                         metricType: MetricMeasurementPoint,
-                         processToken: ProcessToken,
-                         timestamp: moment.Moment,
-                         error?: Error): Promise<void>;
+    processModelId: string,
+    flowNodeInstanceId: string,
+    flowNodeId: string,
+    metricType: MetricMeasurementPoint,
+    processToken: ProcessToken,
+    timestamp: moment.Moment,
+    error?: Error): Promise<void>;
 }

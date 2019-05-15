@@ -8,6 +8,8 @@ import {CamundaExtensionProperty} from './camunda_extension_property';
  * 'module', 'method' and 'params'.
  */
 export class ExtensionElements {
+
   public camundaExecutionListener?: CamundaExecutionListener;
   public camundaExtensionProperties?: Array<CamundaExtensionProperty> = [];
+
 }

@@ -16,34 +16,31 @@ import {
  * with a success message or an error.
  */
 export class EndEvent extends Event {
+
   public get bpmnType(): BpmnType {
     return BpmnType.endEvent;
   }
 
   public get eventType(): EventType {
-    const eventIsErrorEvent: boolean = this.errorEventDefinition !== undefined &&
-                                       this.errorEventDefinition !== null;
+    const eventIsErrorEvent: boolean = this.errorEventDefinition !== undefined;
     if (eventIsErrorEvent) {
 
       return EventType.errorEvent;
     }
 
-    const eventIsMessageEvent: boolean = this.messageEventDefinition !== undefined &&
-                                         this.messageEventDefinition !== null;
+    const eventIsMessageEvent: boolean = this.messageEventDefinition !== undefined;
     if (eventIsMessageEvent) {
 
       return EventType.messageEvent;
     }
 
-    const eventIsSignalEvent: boolean = this.signalEventDefinition !== undefined &&
-                                        this.signalEventDefinition !== null;
+    const eventIsSignalEvent: boolean = this.signalEventDefinition !== undefined;
     if (eventIsSignalEvent) {
 
       return EventType.signalEvent;
     }
 
-    const eventIsTerminateEvent: boolean = this.terminateEventDefinition !== undefined &&
-                                           this.terminateEventDefinition !== null;
+    const eventIsTerminateEvent: boolean = this.terminateEventDefinition !== undefined;
     if (eventIsTerminateEvent) {
 
       return EventType.terminateEvent;
@@ -64,4 +61,5 @@ export class EndEvent extends Event {
    * payload.
    */
   public inputValues?: any;
+
 }

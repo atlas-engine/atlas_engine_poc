@@ -9,9 +9,11 @@ import {UserTaskFormField} from './types/user_task_form_field';
  * before continuing.
  */
 export class UserTask extends Activity {
+
   public get bpmnType(): BpmnType {
     return BpmnType.userTask;
   }
+
   public preferredControl?: string;
   public assignee: string;
   public candidateUsers: string;
@@ -21,4 +23,5 @@ export class UserTask extends Activity {
   public formFields: Array<UserTaskFormField>;
   public description: string;
   public finishedMessage: string;
+
 }

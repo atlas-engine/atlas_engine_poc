@@ -10,4 +10,5 @@ export class ExtendLockRequestPayload {
     this.workerId = workerId;
     this.additionalDuration = additionalDuration;
   }
+
 }

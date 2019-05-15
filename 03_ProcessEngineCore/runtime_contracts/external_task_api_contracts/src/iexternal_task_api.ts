@@ -35,11 +35,11 @@ export interface IExternalTaskApi {
    *                             access ExternalTasks.
    */
   fetchAndLockExternalTasks<TPayloadType>(identity: IIdentity,
-                                          workerId: string,
-                                          topicName: string,
-                                          maxTasks: number,
-                                          longPollingTimeout: number,
-                                          lockDuration: number): Promise<Array<ExternalTask<TPayloadType>>>;
+    workerId: string,
+    topicName: string,
+    maxTasks: number,
+    longPollingTimeout: number,
+    lockDuration: number): Promise<Array<ExternalTask<TPayloadType>>>;
 
   /**
    *
@@ -114,5 +114,5 @@ export interface IExternalTaskApi {
    *                        the ExternalTask.
    * @throws                404, if the ExternalTask was not found.
    */
-  finishExternalTask<TResultType>(identity: IIdentity, workerId: string, externalTaskId: string, result: TResultType): Promise<any>;
+  finishExternalTask<TResultType>(identity: IIdentity, workerId: string, externalTaskId: string, result: TResultType): Promise<void>;
 }

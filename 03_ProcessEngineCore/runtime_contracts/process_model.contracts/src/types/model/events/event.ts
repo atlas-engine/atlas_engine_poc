@@ -1,4 +1,4 @@
-import {FlowNode} from './../base/index';
+import {FlowNode} from '../base/index';
 
 /**
  * The base class for all events.

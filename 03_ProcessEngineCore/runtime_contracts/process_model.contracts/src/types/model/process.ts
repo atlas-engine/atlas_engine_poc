@@ -8,9 +8,11 @@ import {LaneSet, SequenceFlow} from './process/index';
  * This is the root element for working with ProcessModels.
  */
 export class Process extends BaseElement {
+
   public name: string;
   public isExecutable: boolean;
   public laneSet?: LaneSet;
   public flowNodes: Array<FlowNode> = [];
   public sequenceFlows: Array<SequenceFlow> = [];
+
 }

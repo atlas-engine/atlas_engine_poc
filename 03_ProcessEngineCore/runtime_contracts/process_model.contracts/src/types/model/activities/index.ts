@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as invocations from './invocations';
 import * as types from './types/index';
 

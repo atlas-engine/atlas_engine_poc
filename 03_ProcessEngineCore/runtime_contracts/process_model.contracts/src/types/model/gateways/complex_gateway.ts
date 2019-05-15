@@ -7,7 +7,9 @@ import {Gateway} from './gateway';
  * Currently not evaluated during runtime.
  */
 export class ComplexGateway extends Gateway {
+
   public get bpmnType(): BpmnType {
     return BpmnType.complexGateway;
   }
+
 }

@@ -80,7 +80,7 @@ export interface IProcessModelService {
    */
   getProcessModels(identity: IIdentity): Promise<Array<Model.Process>>;
 
- /**
+  /**
    * Deletes the ProcessDefinition with a specific ProcessModelId.
    *
    * @async

@@ -7,7 +7,9 @@ import {FlowNode} from '../base/index';
  * Technically, this services as a Breakpoint for the Frontend.
  */
 export class EmptyActivity extends FlowNode {
+
   public get bpmnType(): BpmnType {
     return BpmnType.emptyActivity;
   }
+
 }

@@ -6,9 +6,11 @@ import {BaseElement} from './base_element';
  * These include Events, Gateways and Activities.
  */
 export abstract class FlowNode extends BaseElement {
-  public abstract readonly bpmnType: BpmnType;
+
   public name: string;
   public incoming: Array<string> = [];
   public outgoing: Array<string> = [];
   public defaultOutgoingSequenceFlowId?: string;
+  public abstract readonly bpmnType: BpmnType;
+
 }

@@ -12,4 +12,5 @@ export class HandleServiceErrorRequestPayload {
     this.errorMessage = errorMessage;
     this.errorDetails = errorDetails;
   }
+
 }

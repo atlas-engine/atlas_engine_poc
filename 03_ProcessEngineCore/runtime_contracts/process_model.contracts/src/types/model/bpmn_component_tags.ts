@@ -29,6 +29,7 @@ export enum XmlnsProperty {
  * Contains all tags associated with lanes and lane sets.
  */
 export enum Lane {
+  // eslint-disable-next-line no-shadow
   Lane = 'bpmn:lane',
   LaneSet = 'bpmn:laneSet',
 }

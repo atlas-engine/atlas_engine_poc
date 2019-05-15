@@ -1,4 +1,6 @@
-import {FlowNode, FlowNodeInstance, FlowNodeInstanceState, ProcessToken} from './types/index';
+import {
+  FlowNode, FlowNodeInstance, FlowNodeInstanceState, ProcessToken,
+} from './types/index';
 
 /**
  * Accesses the FlowNodeInstance database.
@@ -21,9 +23,9 @@ export interface IFlowNodeInstanceRepository {
    * @returns                            The persisted FlowNodeInstance.
    */
   persistOnEnter(flowNode: FlowNode,
-                 flowNodeInstanceId: string,
-                 token: ProcessToken,
-                 previousFlowNodeInstanceId?: string): Promise<FlowNodeInstance>;
+    flowNodeInstanceId: string,
+    token: ProcessToken,
+    previousFlowNodeInstanceId?: string): Promise<FlowNodeInstance>;
 
   /**
    * Persists the state of a FlowNodeInstance when it was successfully finished.

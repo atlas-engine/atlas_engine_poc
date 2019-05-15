@@ -5,20 +5,15 @@ import {ExternalTask} from './data_models/external_task';
 import {IExternalTaskResult} from '.';
 
 /**
- * Definition of the HandleExternalTask Callback. 
+ * Definition of the HandleExternalTask Callback.
  */
-export interface HandleExternalTaskAction<TPayload> {
-  (externalTask: ExternalTask<TPayload>): Promise<IExternalTaskResult>
-}
+export type HandleExternalTaskAction<TPayload> = (externalTask: ExternalTask<TPayload>) => Promise<IExternalTaskResult>
 
 /**
- * Periodically fetches, locks and processes ExternalTasks for a given topic.
+ * Describes a worker that can be used to process ExternalTasks.
  */
 export interface IExternalTaskWorker {
 
-  /**
-   * Id of worker
-   */
   workerId: string;
 
   /**

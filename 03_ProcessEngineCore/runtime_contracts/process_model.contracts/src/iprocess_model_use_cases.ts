@@ -91,7 +91,7 @@ export interface IProcessModelUseCases {
    */
   getProcessModels(identity: IIdentity): Promise<Array<Model.Process>>;
 
-    /**
+  /**
    * Removes all processModels, correlations, externalTasks, flowNodeInstances
    * and ProcessTokens with a specific ProcessModelId.
    *

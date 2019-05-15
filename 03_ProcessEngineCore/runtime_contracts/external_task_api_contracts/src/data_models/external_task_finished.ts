@@ -1,19 +1,19 @@
 import {IIdentity} from '@essential-projects/iam_contracts';
 
-import {IExternalTaskApi, IExternalTaskResult} from '.';
+import {IExternalTaskApi, IExternalTaskResult} from '../index';
 
 /**
- * Contains the result set for an ExternalTask that failed with an Error.
+ * Contains the result set for a successfully executed ExternalTask.
  */
-export class ExternalTaskBpmnError implements IExternalTaskResult {
-  private readonly _externalTaskId: string;
-  private readonly _errorCode: string;
+export class ExternalTaskFinished<TResult> implements IExternalTaskResult {
 
-  constructor(externalTaskId: string, errorCode: string) {
-    this._externalTaskId = externalTaskId;
-    this._errorCode = errorCode;
+  private readonly externalTaskId: string;
+  private readonly result: TResult;
+
+  constructor(externalTaskId: string, result: TResult) {
+    this.externalTaskId = externalTaskId;
+    this.result = result;
   }
-
 
   /**
    * Sends the ExternalTasks result to the ExternalTaskAPI, using the given 'IExternalTaskAPI' instance.
@@ -24,6 +24,7 @@ export class ExternalTaskBpmnError implements IExternalTaskResult {
    * @param workerId           Id of the Worker wich handled this tasks.
    */
   public async sendToExternalTaskApi(externalTaskApi: IExternalTaskApi, identity: IIdentity, workerId: string): Promise<void> {
-    await externalTaskApi.handleBpmnError(identity, workerId, this._externalTaskId, this._errorCode);
+    await externalTaskApi.finishExternalTask<TResult>(identity, workerId, this.externalTaskId, this.result);
   }
+
 }

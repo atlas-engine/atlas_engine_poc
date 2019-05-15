@@ -11,4 +11,5 @@ export class LinkEventDefinition extends EventDefinition {
     super();
     this.name = linkName;
   }
+
 }

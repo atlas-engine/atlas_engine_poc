@@ -10,4 +10,5 @@ export class HandleBpmnErrorRequestPayload {
     this.workerId = workerId;
     this.errorCode = errorCode;
   }
+
 }

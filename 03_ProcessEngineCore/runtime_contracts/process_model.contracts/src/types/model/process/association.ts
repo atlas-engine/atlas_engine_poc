@@ -6,6 +6,8 @@ import {BaseElement} from '../base/index';
  * such as TextAnnotations.
  */
 export class Association extends BaseElement {
+
   public sourceRef: string;
   public targetRef: string;
+
 }

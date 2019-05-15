@@ -16,13 +16,15 @@ import {Activity} from './activity';
  * a SendTask.
  */
 export class ReceiveTask extends Activity {
+
   public get bpmnType(): BpmnType {
     return BpmnType.receiveTask;
   }
 
- /**
+  /**
    * This is the user defined Message which is expected by this
    * ReceiveTask.
    */
   public messageEventDefinition: MessageEventDefinition;
+
 }

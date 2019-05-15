@@ -16,20 +16,21 @@ export abstract class Gateway extends FlowNode {
     if (!this.incoming || !this.outgoing) {
       // Some SequenceFlows are missing: Gateway is undefined and not processable.
       return GatewayDirection.Unspecified;
-    } else if (this.incoming.length > 1 && this.outgoing.length > 1) {
+    } if (this.incoming.length > 1 && this.outgoing.length > 1) {
       // Both incoming and outgoing SequenceFlows number more than one: Mixed Gateway.
       return GatewayDirection.Mixed;
-    } else if (this.incoming.length > this.outgoing.length) {
+    } if (this.incoming.length > this.outgoing.length) {
       // One outgoing and multiple incoming SequenceFlows: Join-Gateway.
       return GatewayDirection.Converging;
-    } else if (this.outgoing.length > this.incoming.length) {
+    } if (this.outgoing.length > this.incoming.length) {
       // One incoming and multiple outgoing SequenceFlows: Split-Gateway.
       return GatewayDirection.Diverging;
-    } else {
-      // Gateway configuration is not supported.
-      return GatewayDirection.Unspecified;
     }
+    // Gateway configuration is not supported.
+    return GatewayDirection.Unspecified;
+
   }
+
 }
 
 /**

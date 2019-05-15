@@ -8,7 +8,9 @@ import {LaneSet} from './lane_set';
  * This reflects the original XML structure as defined by the BPMN specs.
  */
 export class Lane extends BaseElement {
+
   public name: string;
   public flowNodeReferences: Array<string> = [];
   public childLaneSet?: LaneSet;
+
 }

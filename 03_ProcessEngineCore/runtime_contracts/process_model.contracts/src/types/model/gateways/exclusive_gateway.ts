@@ -7,7 +7,9 @@ import {Gateway} from './gateway';
  * These gateways are used for conditional branch execution.
  */
 export class ExclusiveGateway extends Gateway {
+
   public get bpmnType(): BpmnType {
     return BpmnType.exclusiveGateway;
   }
+
 }

@@ -34,11 +34,11 @@ export interface ILoggingApi {
    *                          Defaults to "now".
    */
   writeLogForProcessModel(correlationId: string,
-                          processModelId: string,
-                          processInstanceId: string,
-                          logLevel: LogLevel,
-                          message: string,
-                          timestamp?: Date): Promise<void>;
+    processModelId: string,
+    processInstanceId: string,
+    logLevel: LogLevel,
+    message: string,
+    timestamp?: Date): Promise<void>;
 
   /**
    * Writes a log entry for a specific FlowNode of a ProcessModel within a
@@ -59,11 +59,11 @@ export interface ILoggingApi {
    *                           Defaults to "now".
    */
   writeLogForFlowNode(correlationId: string,
-                      processModelId: string,
-                      processInstanceId: string,
-                      flowNodeInstanceId: string,
-                      flowNodeId: string,
-                      logLevel: LogLevel,
-                      message: string,
-                      timestamp?: Date): Promise<void>;
+    processModelId: string,
+    processInstanceId: string,
+    flowNodeInstanceId: string,
+    flowNodeId: string,
+    logLevel: LogLevel,
+    message: string,
+    timestamp?: Date): Promise<void>;
 }

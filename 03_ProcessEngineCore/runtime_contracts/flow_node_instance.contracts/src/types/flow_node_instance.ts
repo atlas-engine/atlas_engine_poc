@@ -9,6 +9,7 @@ import {ProcessTokenType} from './process_token_type';
  * Describes a single FlowNodeInstance.
  */
 export class FlowNodeInstance {
+
   public id: string;
   public flowNodeId: string;
   /**
@@ -54,4 +55,5 @@ export class FlowNodeInstance {
       return token.type === tokenType;
     });
   }
+
 }

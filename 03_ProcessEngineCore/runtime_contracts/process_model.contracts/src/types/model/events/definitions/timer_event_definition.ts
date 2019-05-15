@@ -1,7 +1,9 @@
 import {EventDefinition} from './event_definition';
 
 export class TimerEventDefinition extends EventDefinition {
+
   public timerType: TimerType;
+
 }
 
 export enum TimerType {

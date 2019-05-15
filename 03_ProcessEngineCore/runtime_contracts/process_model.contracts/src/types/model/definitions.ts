@@ -7,6 +7,7 @@ import {Xmlns} from './xmlns';
  * This is the root object for the internal ProcessModel structure.
  */
 export class Definitions {
+
   public xmlns: Xmlns;
   public id: string;
   public targetNamespace: string;
@@ -21,4 +22,5 @@ export class Definitions {
    * Contains a list of all processes contained within this definition.
    */
   public processes: Array<Process> = [];
+
 }

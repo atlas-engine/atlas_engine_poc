@@ -7,6 +7,7 @@ import {Activity} from './activity';
  * Currently not evaluated during runtime.
  */
 export class ManualTask extends Activity {
+
   public get bpmnType(): BpmnType {
     return BpmnType.manualTask;
   }

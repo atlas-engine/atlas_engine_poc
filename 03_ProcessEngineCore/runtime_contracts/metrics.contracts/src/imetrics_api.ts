@@ -56,11 +56,11 @@ export interface IMetricsApi {
    * @param timestamp          The date and time at which the metric was recorded.
    */
   writeOnFlowNodeInstanceEnter(correlationId: string,
-                               processModelId: string,
-                               flowNodeInstanceId: string,
-                               flowNodeId: string,
-                               processToken: ProcessToken,
-                               timestamp: moment.Moment): Promise<void>;
+    processModelId: string,
+    flowNodeInstanceId: string,
+    flowNodeId: string,
+    processToken: ProcessToken,
+    timestamp: moment.Moment): Promise<void>;
 
   /**
    * Writes a metric entry for a FlowNodeInstance of a specific ProcessModel
@@ -76,11 +76,11 @@ export interface IMetricsApi {
    * @param timestamp          The date and time at which the metric was recorded.
    */
   writeOnFlowNodeInstanceExit(correlationId: string,
-                              processModelId: string,
-                              flowNodeInstanceId: string,
-                              flowNodeId: string,
-                              processToken: ProcessToken,
-                              timestamp: moment.Moment): Promise<void>;
+    processModelId: string,
+    flowNodeInstanceId: string,
+    flowNodeId: string,
+    processToken: ProcessToken,
+    timestamp: moment.Moment): Promise<void>;
 
   /**
    * Writes a metric entry for a FlowNodeInstance of a specific ProcessModel
@@ -97,12 +97,12 @@ export interface IMetricsApi {
    * @param timestamp          The date and time at which the metric was recorded.
    */
   writeOnFlowNodeInstanceError(correlationId: string,
-                               processModelId: string,
-                               flowNodeInstanceId: string,
-                               flowNodeId: string,
-                               processToken: ProcessToken,
-                               error: Error,
-                               timestamp: moment.Moment): Promise<void>;
+    processModelId: string,
+    flowNodeInstanceId: string,
+    flowNodeId: string,
+    processToken: ProcessToken,
+    error: Error,
+    timestamp: moment.Moment): Promise<void>;
 
   /**
    * Writes a metric entry for a FlowNodeInstance of a ProcessInstance.
@@ -117,11 +117,11 @@ export interface IMetricsApi {
    * @param timestamp          The date and time at which the metric was recorded.
    */
   writeOnFlowNodeInstanceSuspend(correlationId: string,
-                                 processModelId: string,
-                                 flowNodeInstanceId: string,
-                                 flowNodeId: string,
-                                 processToken: ProcessToken,
-                                 timestamp: moment.Moment): Promise<void>;
+    processModelId: string,
+    flowNodeInstanceId: string,
+    flowNodeId: string,
+    processToken: ProcessToken,
+    timestamp: moment.Moment): Promise<void>;
 
   /**
    * Writes a metric entry for a FlowNodeInstance of a ProcessInstance.
@@ -136,9 +136,9 @@ export interface IMetricsApi {
    * @param timestamp          The date and time at which the metric was recorded.
    */
   writeOnFlowNodeInstanceResume(correlationId: string,
-                                processModelId: string,
-                                flowNodeInstanceId: string,
-                                flowNodeId: string,
-                                processToken: ProcessToken,
-                                timestamp: moment.Moment): Promise<void>;
+    processModelId: string,
+    flowNodeInstanceId: string,
+    flowNodeId: string,
+    processToken: ProcessToken,
+    timestamp: moment.Moment): Promise<void>;
 }

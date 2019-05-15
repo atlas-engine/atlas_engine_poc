@@ -10,6 +10,7 @@ import {LogLevel} from './log_level';
  * actual log file.
  */
 export class LogEntry {
+
   public timeStamp: Date;
   public correlationId: string;
   public processModelId: string;
@@ -18,4 +19,5 @@ export class LogEntry {
   public flowNodeId?: string;
   public logLevel: LogLevel;
   public message: string;
+
 }

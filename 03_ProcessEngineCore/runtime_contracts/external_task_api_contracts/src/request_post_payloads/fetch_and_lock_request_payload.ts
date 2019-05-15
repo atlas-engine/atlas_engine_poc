@@ -16,4 +16,5 @@ export class FetchAndLockRequestPayload {
     this.longPollingTimeout = longPollingTimeout;
     this.lockDuration = lockDuration;
   }
+
 }

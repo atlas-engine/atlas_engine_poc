@@ -4,10 +4,11 @@
 export class FinishExternalTaskRequestPayload<TResultType> {
 
   public readonly workerId: string;
-  public readonly result: any;
+  public readonly result: TResultType;
 
   constructor(workerId: string, result: TResultType) {
     this.workerId = workerId;
     this.result = result;
   }
+
 }

@@ -6,6 +6,8 @@ import {Participant} from './participant';
  * collaboration and a list of participants.
  */
 export class Collaboration extends BaseElement {
+
   public name: string;
   public participants: Array<Participant> = [];
+
 }

@@ -7,7 +7,7 @@ import {ExternalTaskState} from './external_task_state';
  * Describes an ExternalTask that the ProcessEngine has delegated to an
  * ExternalTask worker for processing.
  */
-export class ExternalTask<TPayloadType> {
+export class ExternalTask<TPayload> {
 
   public id: string;
   /**
@@ -25,7 +25,7 @@ export class ExternalTask<TPayloadType> {
    * The payload containing all relevant data the worker needs to execute the
    * ExternalTask.
    */
-  public payload: TPayloadType;
+  public payload: TPayload;
   /**
    * The lock expiration time. On expiration, the task is released to
    * be processed by other workers.
@@ -35,7 +35,7 @@ export class ExternalTask<TPayloadType> {
   public state: ExternalTaskState = ExternalTaskState.pending;
   public finishedAt?: Date;
   public result?: any;
-  public error?: any;
+  public error?: Error;
   public createdAt?: Date;
 
   /**
@@ -52,4 +52,5 @@ export class ExternalTask<TPayloadType> {
 
     return lockExpirationAsMoment.isAfter(now);
   }
+
 }

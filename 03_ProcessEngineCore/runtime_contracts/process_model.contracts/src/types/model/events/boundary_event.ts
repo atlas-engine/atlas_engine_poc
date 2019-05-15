@@ -15,34 +15,31 @@ import {
  * as long as that activity gets executed.
  */
 export class BoundaryEvent extends Event {
+
   public get bpmnType(): BpmnType {
     return BpmnType.boundaryEvent;
   }
 
   public get eventType(): EventType {
-    const eventIsErrorEvent: boolean = this.errorEventDefinition !== undefined &&
-                                       this.errorEventDefinition !== null;
+    const eventIsErrorEvent: boolean = this.errorEventDefinition !== undefined;
     if (eventIsErrorEvent) {
 
       return EventType.errorEvent;
     }
 
-    const eventIsMessageEvent: boolean = this.messageEventDefinition !== undefined &&
-                                         this.messageEventDefinition !== null;
+    const eventIsMessageEvent: boolean = this.messageEventDefinition !== undefined;
     if (eventIsMessageEvent) {
 
       return EventType.messageEvent;
     }
 
-    const eventIsSignalEvent: boolean = this.signalEventDefinition !== undefined &&
-                                        this.signalEventDefinition !== null;
+    const eventIsSignalEvent: boolean = this.signalEventDefinition !== undefined;
     if (eventIsSignalEvent) {
 
       return EventType.signalEvent;
     }
 
-    const eventIsTimerEvent: boolean = this.timerEventDefinition !== undefined &&
-                                       this.timerEventDefinition !== null;
+    const eventIsTimerEvent: boolean = this.timerEventDefinition !== undefined;
     if (eventIsTimerEvent) {
 
       return EventType.timerEvent;
@@ -65,4 +62,5 @@ export class BoundaryEvent extends Event {
    * Contains the ID of the activity to which this event is attached.
    */
   public attachedToRef: string;
+
 }

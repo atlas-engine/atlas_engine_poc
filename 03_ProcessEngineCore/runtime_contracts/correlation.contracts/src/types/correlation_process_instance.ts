@@ -6,6 +6,7 @@ import {CorrelationState} from './correlation_state';
  * Describes a ProcessInstance within a Correlation.
  */
 export class CorrelationProcessInstance {
+
   public processDefinitionName: string;
   public hash: string;
   public xml: string;
@@ -16,4 +17,5 @@ export class CorrelationProcessInstance {
   public error: Error;
   public identity: IIdentity;
   public createdAt?: Date;
+
 }

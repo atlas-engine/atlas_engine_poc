@@ -1,4 +1,4 @@
-// tslint:disable:no-namespace
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as activities from './activities/index';
 import * as base from './base/index';
 import * as bpmnTags from './bpmn_component_tags';

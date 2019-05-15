@@ -8,9 +8,11 @@ import {Invocation} from './invocations/index';
  * or for performing web requests.
  */
 export class ServiceTask extends Activity {
+
   public get bpmnType(): BpmnType {
     return BpmnType.serviceTask;
   }
+
   /**
    * The invocation to be used when the ServiceTask is called.
    */
@@ -28,6 +30,7 @@ export class ServiceTask extends Activity {
    * The payload to use in conjunction with external ServiceTasks.
    */
   public payload?: string;
+
 }
 
 /**
