@@ -15,9 +15,9 @@ export class MetricsRepository implements IMetricsRepository {
 
     const fileNameWithExtension = `${processModelId}.met`;
 
-    const metricFilePath: string = this._buildPath(fileNameWithExtension);
+    const metricFilePath = this.buildPath(fileNameWithExtension);
 
-    const metricFileExists: boolean = FileSystemAdapter.targetExists(metricFilePath);
+    const metricFileExists = FileSystemAdapter.targetExists(metricFilePath);
     if (!metricFileExists) {
       return [];
     }
@@ -35,15 +35,14 @@ export class MetricsRepository implements IMetricsRepository {
     error?: Error,
   ): Promise<void> {
 
-    const metricValues: Array<string> =
-      ['ProcessModel', timestamp.toISOString(), correlationId, processModelId, '', '', metricType, '{}'];
+    const metricValues = ['ProcessModel', timestamp.toISOString(), correlationId, processModelId, '', '', metricType, '{}'];
 
     if (error) {
-      const stringifiedError: string = JSON.stringify(error);
+      const stringifiedError = JSON.stringify(error);
       metricValues.push(stringifiedError);
     }
 
-    await this._writeMetricToFileSystem(processModelId, ...metricValues);
+    await this.writeMetricToFileSystem(processModelId, ...metricValues);
   }
 
   public async writeMetricForFlowNode(
@@ -57,35 +56,35 @@ export class MetricsRepository implements IMetricsRepository {
     error?: Error,
   ): Promise<void> {
 
-    const stringyfiedToken: string = JSON.stringify(token);
+    const stringyfiedToken = JSON.stringify(token);
 
-    const metricValues: Array<string> =
+    const metricValues =
       ['FlowNodeInstance', timestamp.toISOString(), correlationId, processModelId, flowNodeInstanceId, flowNodeId, metricType, stringyfiedToken];
 
     if (error) {
-      const stringifiedError: string = JSON.stringify(error);
+      const stringifiedError = JSON.stringify(error);
       metricValues.push(stringifiedError);
     }
 
-    await this._writeMetricToFileSystem(processModelId, ...metricValues);
+    await this.writeMetricToFileSystem(processModelId, ...metricValues);
   }
 
-  private async _writeMetricToFileSystem(processModelId: string, ...metricValues: Array<string>): Promise<void> {
+  private async writeMetricToFileSystem(processModelId: string, ...metricValues: Array<string>): Promise<void> {
 
     const filePathWithExtension = `${processModelId}.met`;
-    const targetFilePath: string = this._buildPath(filePathWithExtension);
+    const targetFilePath = this.buildPath(filePathWithExtension);
 
-    const metricEntryAsString: string = this._buildMetricString(...metricValues);
+    const metricEntryAsString = this.buildMetricString(...metricValues);
 
     await FileSystemAdapter.ensureDirectoryExists(targetFilePath);
     await FileSystemAdapter.writeToFile(targetFilePath, metricEntryAsString);
   }
 
-  private _buildPath(...pathSegments: Array<string>): string {
+  private buildPath(...pathSegments: Array<string>): string {
     return path.resolve(process.cwd(), this.config.output_path, ...pathSegments);
   }
 
-  private _buildMetricString(...args: Array<string>): string {
+  private buildMetricString(...args: Array<string>): string {
     return args.join(';');
   }
 

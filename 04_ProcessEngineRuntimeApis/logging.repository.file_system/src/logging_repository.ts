@@ -13,14 +13,14 @@ export class LoggingRepository implements ILoggingRepository {
 
     const fileNameWithExtension = `${processModelId}.log`;
 
-    const logFilePath: string = this._buildPath(fileNameWithExtension);
+    const logFilePath = this.buildPath(fileNameWithExtension);
 
-    const logFileExists: boolean = FileSystemAdapter.targetExists(logFilePath);
+    const logFileExists = FileSystemAdapter.targetExists(logFilePath);
     if (!logFileExists) {
       return [];
     }
 
-    const correlationLogs: Array<LogEntry> = FileSystemAdapter.readAndParseFile(logFilePath);
+    const correlationLogs = FileSystemAdapter.readAndParseFile(logFilePath);
 
     return correlationLogs;
   }
@@ -34,11 +34,10 @@ export class LoggingRepository implements ILoggingRepository {
     timestamp: Date,
   ): Promise<void> {
 
-    const timeStampAsIsoString: string = moment(timestamp).toISOString();
+    const timeStampAsIsoString = moment(timestamp).toISOString();
 
-    const logEntryValues: Array<string> =
-      ['ProcessModel', timeStampAsIsoString, correlationId, processModelId, processInstanceId, '', '', logLevel, message];
-    await this._writeLogEntryToFileSystem(processModelId, ...logEntryValues);
+    const logEntryValues = ['ProcessModel', timeStampAsIsoString, correlationId, processModelId, processInstanceId, '', '', logLevel, message];
+    await this.writeLogEntryToFileSystem(processModelId, ...logEntryValues);
   }
 
   public async writeLogForFlowNode(
@@ -52,30 +51,30 @@ export class LoggingRepository implements ILoggingRepository {
     timestamp: Date,
   ): Promise<void> {
 
-    const timeStampAsIsoString: string = moment(timestamp).toISOString();
+    const timeStampAsIsoString = moment(timestamp).toISOString();
 
-    const logEntryValues: Array<string> =
+    const logEntryValues =
       ['FlowNodeInstance', timeStampAsIsoString, correlationId, processModelId, processInstanceId, flowNodeInstanceId, flowNodeId, logLevel, message];
-    await this._writeLogEntryToFileSystem(processModelId, ...logEntryValues);
+    await this.writeLogEntryToFileSystem(processModelId, ...logEntryValues);
   }
 
-  private async _writeLogEntryToFileSystem(processModelId: string, ...values: Array<string>): Promise<void> {
+  private async writeLogEntryToFileSystem(processModelId: string, ...values: Array<string>): Promise<void> {
 
     const fileNameWithExtension = `${processModelId}.log`;
 
-    const targetFilePath: string = this._buildPath(fileNameWithExtension);
+    const targetFilePath = this.buildPath(fileNameWithExtension);
 
-    const loggingEntryAsString: string = this._buildLoggingString(...values);
+    const loggingEntryAsString = this.buildLoggingString(...values);
 
     await FileSystemAdapter.ensureDirectoryExists(targetFilePath);
     await FileSystemAdapter.writeToLogFile(targetFilePath, loggingEntryAsString);
   }
 
-  private _buildPath(...pathSegments: Array<string>): string {
+  private buildPath(...pathSegments: Array<string>): string {
     return path.resolve(process.cwd(), this.config.output_path, ...pathSegments);
   }
 
-  private _buildLoggingString(...args: Array<string>): string {
+  private buildLoggingString(...args: Array<string>): string {
     return args.join(';');
   }
 

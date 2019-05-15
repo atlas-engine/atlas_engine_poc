@@ -11,75 +11,75 @@ import {IIAMService} from '@essential-projects/iam_contracts';
 
 export class FlowNodeInstanceService implements IFlowNodeInstanceService {
 
-  private readonly _flowNodeInstanceRepository: IFlowNodeInstanceRepository;
-  private readonly _iamService: IIAMService;
+  private readonly flowNodeInstanceRepository: IFlowNodeInstanceRepository;
+  private readonly iamService: IIAMService;
 
   constructor(flowNodeInstanceRepository: IFlowNodeInstanceRepository, iamService: IIAMService) {
-    this._flowNodeInstanceRepository = flowNodeInstanceRepository;
-    this._iamService = iamService;
+    this.flowNodeInstanceRepository = flowNodeInstanceRepository;
+    this.iamService = iamService;
   }
 
   public async querySpecificFlowNode(correlationId: string, processModelId: string, flowNodeId: string): Promise<FlowNodeInstance> {
-    return this._flowNodeInstanceRepository.querySpecificFlowNode(correlationId, processModelId, flowNodeId);
+    return this.flowNodeInstanceRepository.querySpecificFlowNode(correlationId, processModelId, flowNodeId);
   }
 
   public async queryByFlowNodeId(flowNodeId: string): Promise<Array<FlowNodeInstance>> {
-    return this._flowNodeInstanceRepository.queryByFlowNodeId(flowNodeId);
+    return this.flowNodeInstanceRepository.queryByFlowNodeId(flowNodeId);
   }
 
   public async queryByInstanceId(instanceId: string): Promise<FlowNodeInstance> {
-    return this._flowNodeInstanceRepository.queryByInstanceId(instanceId);
+    return this.flowNodeInstanceRepository.queryByInstanceId(instanceId);
   }
 
   public async queryByCorrelation(correlationId: string): Promise<Array<FlowNodeInstance>> {
-    return this._flowNodeInstanceRepository.queryByCorrelation(correlationId);
+    return this.flowNodeInstanceRepository.queryByCorrelation(correlationId);
   }
 
   public async queryByProcessModel(processModelId: string): Promise<Array<FlowNodeInstance>> {
-    return this._flowNodeInstanceRepository.queryByProcessModel(processModelId);
+    return this.flowNodeInstanceRepository.queryByProcessModel(processModelId);
   }
 
   public async queryByCorrelationAndProcessModel(correlationId: string, processModelId: string): Promise<Array<FlowNodeInstance>> {
-    return this._flowNodeInstanceRepository.queryByCorrelationAndProcessModel(correlationId, processModelId);
+    return this.flowNodeInstanceRepository.queryByCorrelationAndProcessModel(correlationId, processModelId);
   }
 
   public async queryByProcessInstance(processInstanceId: string): Promise<Array<FlowNodeInstance>> {
-    return this._flowNodeInstanceRepository.queryByProcessInstance(processInstanceId);
+    return this.flowNodeInstanceRepository.queryByProcessInstance(processInstanceId);
   }
 
   public async queryByState(state: FlowNodeInstanceState): Promise<Array<FlowNodeInstance>> {
-    return this._flowNodeInstanceRepository.queryByState(state);
+    return this.flowNodeInstanceRepository.queryByState(state);
   }
 
   public async queryActive(): Promise<Array<FlowNodeInstance>> {
-    return this._flowNodeInstanceRepository.queryActive();
+    return this.flowNodeInstanceRepository.queryActive();
   }
 
   public async queryActiveByProcessInstance(processInstanceId: string): Promise<Array<FlowNodeInstance>> {
-    return this._flowNodeInstanceRepository.queryActiveByProcessInstance(processInstanceId);
+    return this.flowNodeInstanceRepository.queryActiveByProcessInstance(processInstanceId);
   }
 
   public async queryActiveByCorrelationAndProcessModel(
     correlationId: string,
     processModelId: string,
   ): Promise<Array<FlowNodeInstance>> {
-    return this._flowNodeInstanceRepository.queryActiveByCorrelationAndProcessModel(correlationId, processModelId);
+    return this.flowNodeInstanceRepository.queryActiveByCorrelationAndProcessModel(correlationId, processModelId);
   }
 
   public async querySuspendedByCorrelation(correlationId: string): Promise<Array<FlowNodeInstance>> {
-    return this._flowNodeInstanceRepository.querySuspendedByCorrelation(correlationId);
+    return this.flowNodeInstanceRepository.querySuspendedByCorrelation(correlationId);
   }
 
   public async querySuspendedByProcessModel(processModelId: string): Promise<Array<FlowNodeInstance>> {
-    return this._flowNodeInstanceRepository.querySuspendedByProcessModel(processModelId);
+    return this.flowNodeInstanceRepository.querySuspendedByProcessModel(processModelId);
   }
 
   public async querySuspendedByProcessInstance(processInstanceId: string): Promise<Array<FlowNodeInstance>> {
-    return this._flowNodeInstanceRepository.querySuspendedByProcessInstance(processInstanceId);
+    return this.flowNodeInstanceRepository.querySuspendedByProcessInstance(processInstanceId);
   }
 
   public async queryProcessTokensByProcessInstanceId(processInstanceId: string): Promise<Array<ProcessToken>> {
-    return this._flowNodeInstanceRepository.queryProcessTokensByProcessInstanceId(processInstanceId);
+    return this.flowNodeInstanceRepository.queryProcessTokensByProcessInstanceId(processInstanceId);
   }
 
   public async persistOnEnter(
@@ -89,7 +89,7 @@ export class FlowNodeInstanceService implements IFlowNodeInstanceService {
     previousFlowNodeInstanceId: string,
   ): Promise<FlowNodeInstance> {
 
-    return this._flowNodeInstanceRepository.persistOnEnter(flowNode, flowNodeInstanceId, token, previousFlowNodeInstanceId);
+    return this.flowNodeInstanceRepository.persistOnEnter(flowNode, flowNodeInstanceId, token, previousFlowNodeInstanceId);
   }
 
   public async persistOnExit(
@@ -98,7 +98,7 @@ export class FlowNodeInstanceService implements IFlowNodeInstanceService {
     token: ProcessToken,
   ): Promise<FlowNodeInstance> {
 
-    return this._flowNodeInstanceRepository.persistOnExit(flowNode, flowNodeInstanceId, token);
+    return this.flowNodeInstanceRepository.persistOnExit(flowNode, flowNodeInstanceId, token);
   }
 
   public async persistOnError(
@@ -108,7 +108,7 @@ export class FlowNodeInstanceService implements IFlowNodeInstanceService {
     error: Error,
   ): Promise<FlowNodeInstance> {
 
-    return this._flowNodeInstanceRepository.persistOnError(flowNode, flowNodeInstanceId, token, error);
+    return this.flowNodeInstanceRepository.persistOnError(flowNode, flowNodeInstanceId, token, error);
   }
 
   public async persistOnTerminate(
@@ -117,19 +117,19 @@ export class FlowNodeInstanceService implements IFlowNodeInstanceService {
     token: ProcessToken,
   ): Promise<FlowNodeInstance> {
 
-    return this._flowNodeInstanceRepository.persistOnTerminate(flowNode, flowNodeInstanceId, token);
+    return this.flowNodeInstanceRepository.persistOnTerminate(flowNode, flowNodeInstanceId, token);
   }
 
   public async suspend(flowNodeId: string, flowNodeInstanceId: string, token: ProcessToken): Promise<FlowNodeInstance> {
-    return this._flowNodeInstanceRepository.suspend(flowNodeId, flowNodeInstanceId, token);
+    return this.flowNodeInstanceRepository.suspend(flowNodeId, flowNodeInstanceId, token);
   }
 
   public async resume(flowNodeId: string, flowNodeInstanceId: string, token: ProcessToken): Promise<FlowNodeInstance> {
-    return this._flowNodeInstanceRepository.resume(flowNodeId, flowNodeInstanceId, token);
+    return this.flowNodeInstanceRepository.resume(flowNodeId, flowNodeInstanceId, token);
   }
 
   public async deleteByProcessModelId(processModelId: string): Promise<void> {
-    return this._flowNodeInstanceRepository.deleteByProcessModelId(processModelId);
+    return this.flowNodeInstanceRepository.deleteByProcessModelId(processModelId);
   }
 
 }

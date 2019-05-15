@@ -17,11 +17,11 @@ export class ProcessTokenModel extends Model<ProcessTokenModel> {
   @Column({type: DataType.TEXT})
   public payload: string;
 
-  @ForeignKey((): any => FlowNodeInstanceModel)
+  @ForeignKey((): typeof FlowNodeInstanceModel => FlowNodeInstanceModel)
   @Column({type: DataType.STRING})
   public flowNodeInstanceId: string;
 
-  @BelongsTo((): any => FlowNodeInstanceModel, {
+  @BelongsTo((): typeof FlowNodeInstanceModel => FlowNodeInstanceModel, {
     foreignKey: 'flowNodeInstanceId',
     targetKey: 'flowNodeInstanceId',
   })

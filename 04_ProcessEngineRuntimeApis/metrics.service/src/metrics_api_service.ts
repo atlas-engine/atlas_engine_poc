@@ -6,14 +6,10 @@ import {
 
 export class MetricsApiService implements IMetricsApi {
 
-  private _metricsRepository: IMetricsRepository;
+  private metricsRepository: IMetricsRepository;
 
   constructor(metricsRepository: IMetricsRepository) {
-    this._metricsRepository = metricsRepository;
-  }
-
-  private get metricsRepository(): IMetricsRepository {
-    return this._metricsRepository;
+    this.metricsRepository = metricsRepository;
   }
 
   public async writeOnProcessStarted(correlationId: string, processModelId: string, timestamp: moment.Moment): Promise<void> {
