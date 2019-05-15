@@ -1,0 +1,19 @@
+{
+  "name": "@process-engine/process_engine_runtime_meta",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "meta exec \"npm run build\" --exclude 04_ProcessEngineRuntimeApis",
+    "lint": "meta exec \"npm run lint\" --exclude 04_ProcessEngineRuntimeApis",
+    "lint-fix": "meta exec \"npm run lint-fix\" --exclude 04_ProcessEngineRuntimeApis",
+    "postinstall": "minstall --no-hoist aurelia-* --trust-local-modules .",
+    "reinstall": "./reinstall.sh"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "meta-npm": "0.0.18",
+    "minstall": "^3.3.0"
+  }
+}

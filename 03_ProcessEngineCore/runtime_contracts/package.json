@@ -7,8 +7,7 @@
     "build": "meta exec \"npm run build\" --exclude runtime_contracts",
     "lint": "meta exec \"npm run lint\" --exclude runtime_contracts",
     "lint-fix": "meta exec \"npm run lint-fix\" --exclude runtime_contracts",
-    "postinstall": "minstall --no-hoist aurelia-* --trust-local-modules .",
-    "reinstall": "./reinstall.sh"
+    "postinstall": "minstall --no-hoist aurelia-* --trust-local-modules ."
   },
   "author": "",
   "license": "ISC",
