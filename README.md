@@ -119,6 +119,15 @@ Die bestehenden Runtime APIs werden wie folgt zusammengeführt:
 
 Da Logs und Metriken bevorzugt in Dateien auf dem lokalen Dateisystem abgelegt und in der Regel nach dem “Fire & Forget” Prinzip generiert werden, würde ich es nicht für richtig erachten, diese mit in die Persistence API zu integrieren.
 
+Die datenbankorientierten APis können zu einer API zusammengefasst werden, da es sehr unwahrscheinlich ist, dass wir jemals eine ProcessEngine releasen werden, die nicht  alle diese Persistenz Funktionen bereit stellt. Eine Zusammenlegung der APIs reduziert jedoch den Pflegeaufwand erheblich.
+
+Ebenfalls sollen die Funktionen der Persistence API auf das wesentliche reduziert werden.
+Aktuell ist es noch so, dass sämtliche UseCases, die von den der Consumer API und Management API benötigt werden, bis in den Persistence Layer durch programmiert wurden.
+Besonders in der FlowNodeInstance API befinden sich dadurch zahlreiche UseCases, die weit über das übliche CRUD hinausgehen.
+
+Um den Pflegeaufwand für die Persistence API auf ein Minimum zu reduzieren, soll die Persistence API künftig nur noch die grundlegenden CRUD Funktionen bereitstellen (es kann hier sicherlich auch Ausnahmen geben, diese sind jedoch stets zu begründen!).
+Datenfilterung, Sortierung, etc. soll von den aufrufenden APIs selbst durchgeführt werden.
+
 Sollten weitere APIs nötig werden, gilt es zu entscheiden, ob sich eine Integration in die **Persistence API** anbietet, oder ob es vorteilhafter ist diese in eine eigene API zu fassen.
 
 APIs die Daten in Datenbanken schreiben, sollten in die Persistence API mit aufgenommen werden.
