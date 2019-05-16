@@ -2,7 +2,7 @@ import {
   AllowNull, Column, CreatedAt, DataType, Model, Table, UpdatedAt,
 } from 'sequelize-typescript';
 
-import {CorrelationState} from '@process-engine/correlation.contracts';
+import {Types} from '@process-engine/persistence_api.contracts';
 
 @Table({modelName: 'Correlation', tableName: 'Correlations'})
 export class CorrelationModel extends Model<CorrelationModel> {
@@ -29,7 +29,7 @@ export class CorrelationModel extends Model<CorrelationModel> {
 
   @AllowNull(false)
   @Column({type: DataType.TEXT, defaultValue: 'running'})
-  public state: CorrelationState;
+  public state: Types.Correlation.CorrelationState;
 
   @AllowNull(true)
   @Column(DataType.TEXT)

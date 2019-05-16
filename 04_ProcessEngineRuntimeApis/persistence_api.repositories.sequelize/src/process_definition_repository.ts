@@ -9,13 +9,13 @@ import {IDisposable} from '@essential-projects/bootstrapper_contracts';
 import {ConflictError, NotFoundError} from '@essential-projects/errors_ts';
 import {SequelizeConnectionManager} from '@essential-projects/sequelize_connection_manager';
 
-import {IProcessDefinitionRepository, ProcessDefinitionFromRepository} from '@process-engine/process_model.contracts';
+import {Repositories, Types} from '@process-engine/persistence_api.contracts';
 
 import {ProcessDefinitionModel} from './schemas';
 
 const logger: Logger = new Logger('processengine:persistence:process_definition_repository');
 
-export class ProcessDefinitionRepository implements IProcessDefinitionRepository, IDisposable {
+export class ProcessDefinitionRepository implements Repositories.IProcessDefinitionRepository, IDisposable {
 
   public config: SequelizeOptions;
 
@@ -102,7 +102,7 @@ export class ProcessDefinitionRepository implements IProcessDefinitionRepository
     }
   }
 
-  public async getProcessDefinitions(): Promise<Array<ProcessDefinitionFromRepository>> {
+  public async getProcessDefinitions(): Promise<Array<Types.ProcessDefinitionFromRepository>> {
 
     // Get all unique names
     const names = await ProcessDefinitionModel.findAll({
@@ -118,6 +118,7 @@ export class ProcessDefinitionRepository implements IProcessDefinitionRepository
     //
     // NOTE:
     // We cannot simply use something like "GROUP BY name", because Postgres won't allow it on non-index columns.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const processDefinitions = await bluebird.map<any, ProcessDefinitionModel>(namesAsString, this.getProcessDefinitionByName.bind(this));
 
     const runtimeProcessDefinitions = processDefinitions.map(this.convertToProcessDefinitionRuntimeObject);
@@ -125,7 +126,7 @@ export class ProcessDefinitionRepository implements IProcessDefinitionRepository
     return runtimeProcessDefinitions;
   }
 
-  public async getProcessDefinitionByName(name: string): Promise<ProcessDefinitionFromRepository> {
+  public async getProcessDefinitionByName(name: string): Promise<Types.ProcessDefinitionFromRepository> {
 
     // Note:
     // For this use case, we only want to get the most up to date version of the process definition.
@@ -160,7 +161,7 @@ export class ProcessDefinitionRepository implements IProcessDefinitionRepository
     await ProcessDefinitionModel.destroy(queryParams);
   }
 
-  public async getHistoryByName(name: string): Promise<Array<ProcessDefinitionFromRepository>> {
+  public async getHistoryByName(name: string): Promise<Array<Types.ProcessDefinitionFromRepository>> {
 
     const query: FindOptions = {
       where: {
@@ -176,12 +177,12 @@ export class ProcessDefinitionRepository implements IProcessDefinitionRepository
       throw new NotFoundError(`Process definition with name "${name}" not found.`);
     }
 
-    const definitonsRuntime = definitions.map<ProcessDefinitionFromRepository>(this.convertToProcessDefinitionRuntimeObject.bind(this));
+    const definitonsRuntime = definitions.map<Types.ProcessDefinitionFromRepository>(this.convertToProcessDefinitionRuntimeObject.bind(this));
 
     return definitonsRuntime;
   }
 
-  public async getByHash(hash: string): Promise<any> {
+  public async getByHash(hash: string): Promise<Types.ProcessDefinitionFromRepository> {
 
     // Note:
     // Hashes are unique, so there's no need to use that order/limit crutch we have above.
@@ -234,9 +235,9 @@ export class ProcessDefinitionRepository implements IProcessDefinitionRepository
    * @returns           The ProcessEngine runtime object describing a
    *                    ProcessDefinition.
    */
-  private convertToProcessDefinitionRuntimeObject(dataModel: ProcessDefinitionModel): ProcessDefinitionFromRepository {
+  private convertToProcessDefinitionRuntimeObject(dataModel: ProcessDefinitionModel): Types.ProcessDefinitionFromRepository {
 
-    const processDefinition = new ProcessDefinitionFromRepository();
+    const processDefinition = new Types.ProcessDefinitionFromRepository();
     processDefinition.name = dataModel.name;
     processDefinition.xml = dataModel.xml;
     processDefinition.hash = dataModel.hash;

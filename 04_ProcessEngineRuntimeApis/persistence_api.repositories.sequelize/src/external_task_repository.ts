@@ -9,17 +9,14 @@ import {IDisposable} from '@essential-projects/bootstrapper_contracts';
 import {BaseError, NotFoundError, isEssentialProjectsError} from '@essential-projects/errors_ts';
 import {IIdentity} from '@essential-projects/iam_contracts';
 import {SequelizeConnectionManager} from '@essential-projects/sequelize_connection_manager';
-import {
-  ExternalTask,
-  ExternalTaskState,
-  IExternalTaskRepository,
-} from '@process-engine/external_task_api_contracts';
+
+import {Repositories, Types} from '@process-engine/persistence_api.contracts';
 
 import {ExternalTaskModel} from './schemas';
 
 const logger: Logger = new Logger('processengine:persistence:external_task_repository');
 
-export class ExternalTaskRepository implements IExternalTaskRepository, IDisposable {
+export class ExternalTaskRepository implements Repositories.IExternalTaskRepository, IDisposable {
 
   public config: SequelizeOptions;
 
@@ -78,7 +75,7 @@ export class ExternalTaskRepository implements IExternalTaskRepository, IDisposa
     await ExternalTaskModel.create(createParams);
   }
 
-  public async getById<TPayload>(externalTaskId: string): Promise<ExternalTask<TPayload>> {
+  public async getById<TPayload>(externalTaskId: string): Promise<Types.ExternalTask.ExternalTask<TPayload>> {
 
     const result = await ExternalTaskModel.findOne({
       where: {
@@ -99,7 +96,7 @@ export class ExternalTaskRepository implements IExternalTaskRepository, IDisposa
     correlationId: string,
     processInstanceId: string,
     flowNodeInstanceId: string,
-  ): Promise<ExternalTask<TPayload>> {
+  ): Promise<Types.ExternalTask.ExternalTask<TPayload>> {
 
     const result = await ExternalTaskModel.findOne({
       where: {
@@ -120,14 +117,14 @@ export class ExternalTaskRepository implements IExternalTaskRepository, IDisposa
     return externalTask;
   }
 
-  public async fetchAvailableForProcessing<TPayload>(topicName: string, maxTasks: number): Promise<Array<ExternalTask<TPayload>>> {
+  public async fetchAvailableForProcessing<TPayload>(topicName: string, maxTasks: number): Promise<Array<Types.ExternalTask.ExternalTask<TPayload>>> {
 
     const now = moment().toDate();
 
     const options: FindOptions = {
       where: {
         topic: topicName,
-        state: ExternalTaskState.pending,
+        state: Types.ExternalTask.ExternalTaskState.pending,
         lockExpirationTime: {
           [Operators.or]: [
             // Sequelize stores empty database values as "null", so querying for "null" is valid here.
@@ -145,7 +142,7 @@ export class ExternalTaskRepository implements IExternalTaskRepository, IDisposa
 
     const results = await ExternalTaskModel.findAll(options);
 
-    const externalTasks = results.map<ExternalTask<TPayload>>(this.convertToRuntimeObject.bind(this));
+    const externalTasks = results.map<Types.ExternalTask.ExternalTask<TPayload>>(this.convertToRuntimeObject.bind(this));
 
     return externalTasks;
   }
@@ -187,7 +184,7 @@ export class ExternalTaskRepository implements IExternalTaskRepository, IDisposa
     });
 
     externalTask.error = this.serializeError(error);
-    externalTask.state = ExternalTaskState.finished;
+    externalTask.state = Types.ExternalTask.ExternalTaskState.finished;
     externalTask.finishedAt = moment().toDate();
     await externalTask.save();
   }
@@ -201,12 +198,12 @@ export class ExternalTaskRepository implements IExternalTaskRepository, IDisposa
     });
 
     externalTask.result = JSON.stringify(result);
-    externalTask.state = ExternalTaskState.finished;
+    externalTask.state = Types.ExternalTask.ExternalTaskState.finished;
     externalTask.finishedAt = moment().toDate();
     await externalTask.save();
   }
 
-  private serializeError(error: any): string {
+  private serializeError(error: Error | string): string {
 
     const errorIsFromEssentialProjects = isEssentialProjectsError(error);
     if (errorIsFromEssentialProjects) {
@@ -215,7 +212,7 @@ export class ExternalTaskRepository implements IExternalTaskRepository, IDisposa
 
     const errorIsString = typeof error === 'string';
     if (errorIsString) {
-      return error;
+      return error as string;
     }
 
     return JSON.stringify(error);
@@ -229,11 +226,11 @@ export class ExternalTaskRepository implements IExternalTaskRepository, IDisposa
    * @param   dataModel The ExternalTaskModel to convert.
    * @returns           An ExternalTask object usable by the ProcessEngine.
    */
-  private convertToRuntimeObject<TPayload>(dataModel: ExternalTaskModel): ExternalTask<TPayload> {
+  private convertToRuntimeObject<TPayload>(dataModel: ExternalTaskModel): Types.ExternalTask.ExternalTask<TPayload> {
 
     const [identity, payload, result, error] = this.sanitizeDataModel(dataModel);
 
-    const externalTask = new ExternalTask<TPayload>();
+    const externalTask = new Types.ExternalTask.ExternalTask<TPayload>();
     externalTask.id = dataModel.externalTaskId;
     externalTask.workerId = dataModel.workerId;
     externalTask.topic = dataModel.topic;
@@ -244,7 +241,7 @@ export class ExternalTaskRepository implements IExternalTaskRepository, IDisposa
     externalTask.identity = identity;
     externalTask.payload = payload;
     externalTask.lockExpirationTime = dataModel.lockExpirationTime;
-    externalTask.state = ExternalTaskState[dataModel.state];
+    externalTask.state = Types.ExternalTask.ExternalTaskState[dataModel.state];
     externalTask.finishedAt = dataModel.finishedAt;
     externalTask.error = error;
     externalTask.result = result;
@@ -253,6 +250,7 @@ export class ExternalTaskRepository implements IExternalTaskRepository, IDisposa
     return externalTask;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private sanitizeDataModel(dataModel: ExternalTaskModel): Array<any> {
     const identity = dataModel.identity
       ? this.tryParse(dataModel.identity)

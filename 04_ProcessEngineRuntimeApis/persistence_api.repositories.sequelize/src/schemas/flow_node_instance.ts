@@ -2,7 +2,7 @@ import {
   AllowNull, Column, CreatedAt, DataType, HasMany, Model, Table, Unique, UpdatedAt,
 } from 'sequelize-typescript';
 
-import {FlowNodeInstanceState} from '@process-engine/flow_node_instance.contracts';
+import {Types} from '@process-engine/persistence_api.contracts';
 
 import {ProcessTokenModel} from './process_token';
 
@@ -48,7 +48,7 @@ export class FlowNodeInstanceModel extends Model<FlowNodeInstanceModel> {
 
   @AllowNull(false)
   @Column({type: DataType.TEXT, defaultValue: 'finished'})
-  public state: FlowNodeInstanceState;
+  public state: Types.FlowNodeInstance.FlowNodeInstanceState;
 
   @AllowNull(true)
   @Column(DataType.TEXT)

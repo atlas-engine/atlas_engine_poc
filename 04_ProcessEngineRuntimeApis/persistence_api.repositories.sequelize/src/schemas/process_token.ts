@@ -2,7 +2,7 @@ import {
   AllowNull, BelongsTo, Column, CreatedAt, DataType, ForeignKey, Model, Table, UpdatedAt,
 } from 'sequelize-typescript';
 
-import {ProcessTokenType} from '@process-engine/flow_node_instance.contracts';
+import {Types} from '@process-engine/persistence_api.contracts';
 
 import {FlowNodeInstanceModel} from './flow_node_instance';
 
@@ -11,7 +11,7 @@ export class ProcessTokenModel extends Model<ProcessTokenModel> {
 
   @AllowNull(false)
   @Column({type: DataType.STRING})
-  public type: ProcessTokenType;
+  public type: Types.FlowNodeInstance.ProcessTokenType;
 
   @AllowNull(true)
   @Column({type: DataType.TEXT})
