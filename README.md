@@ -33,7 +33,6 @@ Gleiches gilt für die Management API, die den namen **ProcessEngine Admin API**
 Schaut man sich andere APIs, wie z.B. von Twitter, Facebook, etc. an, erkennt man ohnehin schnell, dass es üblich ist öffentliche APIs nach dem Produkt zu benennen, für welches sie geschrieben wurden.
 Es besteht kein Grund, weshalb wir das nicht genauso machen sollten.
 
-
 ## Erläuterung
 
 ### Zusammenfassung
@@ -77,17 +76,13 @@ Wird eine neue Fachlichkeit benötigt (z.B. Handling von Business Rule Tasks, od
 
 Der interne Zuschnitt dieser APIs kann durchaus auf mehrere Klassen aufgeteilt werden (z.B. einen UserTaskService, ManualTaskService, ProcessModelService, etc.), das Endprodukt soll jedoch ein einzelnes sein.
 
-
 ### API Clients
 
 Was die API Clients betrifft, so ergeben sich folgende Änderungen:
 
-Der **ConsumerApiClient** wird zum **ProcessEngineClient**.
+ConsumerApiClient und ExternalTaskApiClient werden zum ProcessEngineClient zusammengefasst.
 
-Der **ExternalTaskApiClient** bleibt wie er ist.
-Wenngleich die ExternalTaskApi mit der ConsumerApi zusammengelegt werden kann, so sollten die zugehörigen Clients weiterhin separat betrachtet werden, da es signifikante Unterschiede in deren Funktionsweise und Anwendungsbereich gibt.
-
-Der **ManagementApiClient** wird in **ProcessEngineAdminClient** umbenannt und behält seine bisherigen Funktionalitäten bei.
+Der ManagementApiClient wird in ProcessEngineAdminClient umbenannt und behält seine bisherigen Funktionalitäten bei.
 
 Die Accessors für beide Clients werden ersatzlos abgeschafft.
 Stattdessen wird es jeweils zwei separate Clients geben:
@@ -122,6 +117,24 @@ Wie der Paketzuschnitt bei npm aussehen wird, muss noch diskutiert werden.
 Persönlich favorisiere ich die jetzige Struktur, in welcher Endpoints, Services, Contracts, Use Cases und Repositories jeweils ein eigenes Paket darstellen.
 Das garantiert uns eine maximale Austauschbarkeit, was besonders für die Runtime Komponenten sehr wichtig sein wird.
 
+### Paketzuschnitt
+
+Auf GitHub wird es 4 Hauptrepositories geben:
+
+- ProcessEngineApi
+- ProcessEngineAdminAPi
+- ProcessEngineCore
+- ProcessEngineRuntime
+
+Die in diesen Repositories befindlichen APis werden den bei uns etablierten Standard Zuschnitt bekommen, sprich:
+
+- **Service**: Für die Kernfunktionalitäten
+- **UseCase**: Für Service-übergreifende Operationen
+- **Repository**: Für den Zugriff auf Datenquellen
+- **Endpoint**: Um externen Komponenten den Zugriff auf die API zu ermöglichen
+
+Jeder Layer einer jeden API Stellt dabei ein eigenes NPM Paket dar. 
+
 ## Nachteile des Vorschlags
 
 - Reduzierte Skalierbarkeit, dadurch dass die APIs gruppiert werden.
@@ -141,29 +154,4 @@ Die Refaktorisierung soll folgende Ziele erfüllen:
 
 ## Ungeklärte Fragen
 
-Folgende Fragen sind noch zu klären:
-
-- Finale GitHub Repository Struktur?
-- Finaler Paketzuschnitt bei npm?
-- Welche API wird final für die Ausführung der untypisierten Activites zuständig sein?
-- Evtl. neue Orga aufsetzen, da viele Paketnamen bei npm mittlerweile belegt sind?
-
-Ebenfalls gilt es noch zu klären inwieweit die Komponenten (Public APIs, ProcessEngine, Runtime Layer) voneinander getrennt werden.
-Erfolgt nur eine logische Trennung, anhand von NPM Paketen und/oder Github Repositories, so kann dies ohne großen Mehraufwand geschehen.
-“Logisch” bedeutet in diesem Zusammenhang, dass die Pakete an unterschiedlichen Orten liegen, aber trotzdem z.B. per IoC in einer zentralen Anwendung zusammengeknotet werden. Die derzeitige ProcessEngineRuntime erledigt dies.
-Die ProcessEngine API würde dann weiterhin die Services des ProcessEngine Cores und der Runtime direkt injected bekommen und es wären keine weiteren Kommunikationskanäle notwendig.
-
-Eine Beispielstruktur könnte so aussehen:
-
-- ProcessEngine API - UserTaskService
-    - Bekommt die Services aus dem ProcessEngine Core injected
-        - Diese bekommen die Services aus der Runtime injected
-
-Alle Komponenten befinden sich in der gleichen Anwendung und im gleichen IoC Container.
-
-Es stand jedoch im letzten Meeting zur Diskussion alle Komponenten hart voneinander zu trennen.
-Sollte dies zur Anforderung werden, gilt es noch auszuarbeiten, wie eine Kommunikation zwischen diesen erfolgen kann:
-
-- Wie können die APIs mit dem ProcessEngine Core kommunizieren?
-- Wie kommuniziert der Core mit den Runtime APIs?
-- Welche Schnittstellen müssen ProcessEngine Core und die Runtime APIs bereitstellen?
+Derzeit keine ungeklärten Fragen vorhanden.
