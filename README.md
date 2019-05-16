@@ -119,7 +119,7 @@ Die bestehenden Runtime APIs werden wie folgt zusammengeführt:
 
 Da Logs und Metriken bevorzugt in Dateien auf dem lokalen Dateisystem abgelegt und in der Regel nach dem “Fire & Forget” Prinzip generiert werden, würde ich es nicht für richtig erachten, diese mit in die Persistence API zu integrieren.
 
-Die datenbankorientierten APis können zu einer API zusammengefasst werden, da es sehr unwahrscheinlich ist, dass wir jemals eine ProcessEngine releasen werden, die nicht  alle diese Persistenz Funktionen bereit stellt. Eine Zusammenlegung der APIs reduziert jedoch den Pflegeaufwand erheblich.
+Die Datenbank orientierten APis können zu einer API zusammengefasst werden, da es sehr unwahrscheinlich ist, dass wir jemals eine ProcessEngine releasen werden, die **nicht** die gesamte Persistenzschicht bereitstellt. Auf der anderen Seite reduziert eine Zusammenlegung der APIs den Pflegeaufwand jedoch erheblich.
 
 Ebenfalls sollen die Funktionen der Persistence API auf das wesentliche reduziert werden.
 Aktuell ist es noch so, dass sämtliche UseCases, die von den der Consumer API und Management API benötigt werden, bis in den Persistence Layer durch programmiert wurden.
