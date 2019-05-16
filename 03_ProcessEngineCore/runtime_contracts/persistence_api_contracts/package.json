@@ -1,5 +1,5 @@
 {
-  "name": "@process-engine/process_model.contracts",
+  "name": "@process-engine/persistence_api.contracts",
   "publishConfig": {
     "registry": "https://www.npmjs.com"
   },
@@ -10,16 +10,16 @@
   "typings": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/process-engine/process_model.contracts.git"
+    "url": "git+https://github.com/process-engine/persistence_api.contracts.git"
   },
   "author": "5Minds IT-Solutions GmbH & Co. KG",
   "contributors": [
     "Christian Werner <christian.werner@5minds.de>"
   ],
   "bugs": {
-    "url": "https://github.com/process-engine/process_model.contracts/issues"
+    "url": "https://github.com/process-engine/persistence_api.contracts/issues"
   },
-  "homepage": "https://github.com/process-engine/process_model.contracts#readme",
+  "homepage": "https://github.com/process-engine/persistence_api.contracts#readme",
   "dependencies": {
     "@essential-projects/iam_contracts": "^3.4.1",
     "moment": "^2.24.0"
