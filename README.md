@@ -105,17 +105,24 @@ Im Rahmen dessen werden auch Metriken und Logs generiert und an entsprechende AP
 Bereitstellen von Contracts für die öffentlichen APIs und die Runtime Komponenten
 
 Aktuell befindet sich auch der Model Parser im Core Paket, welcher die BPMN Diagramme in ein für Node lesbares Format konvertiert.
-Das wäre zwar auch für die neue Struktur passend, aber es könnte sich ggf. anbieten, dieses Modul in eine Runtime Komponente zu verlagern.
+Das wäre zwar auch für die neue Struktur passend, der Konsistenz wegen sollte dieser jedoch in einen Runtime Service ausgelagert werden.
 
 ### Runtime Komponenten
 
 Die Runtime Komponenten (Datenbankzugriff, Logging, Metrics, FileSystem Access, etc.) sind in der Grafik in einer Schicht zusammengefasst.
-Es steht noch zur Diskussion inwieweit eine Aufteilung auf GitHub erfolgen wird.
-Ich halte es jedoch für empfehlenswert, die jetzige Aufteilung weitestgehend beizubehalten und nur die jeweiligen APIs in ein GitHub Repository zusammenzufassen, so wie es auch bei der ProcessEngine API und ProcessEngine Admin API passieren soll.
 
-Wie der Paketzuschnitt bei npm aussehen wird, muss noch diskutiert werden.
-Persönlich favorisiere ich die jetzige Struktur, in welcher Endpoints, Services, Contracts, Use Cases und Repositories jeweils ein eigenes Paket darstellen.
-Das garantiert uns eine maximale Austauschbarkeit, was besonders für die Runtime Komponenten sehr wichtig sein wird.
+Die bestehenden Runtime APIs werden wie folgt zusammengeführt:
+
+- **Persistence API**: Beinhaltet alle Datenbankorientierten APIs (Correlation, FlowNodeInstance, ExternalTask und ProcessModel)
+- **Logging**: Schreibt und liest Logging Daten auf das Dateisystem
+- **Metrics**: Schreibt und liest Metriken auf das Dateisystem
+
+Da Logs und Metriken bevorzugt in Dateien auf dem lokalen Dateisystem abgelegt und in der Regel nach dem “Fire & Forget” Prinzip generiert werden, würde ich es nicht für richtig erachten, diese mit in die Persistence API zu integrieren.
+
+Sollten weitere APIs nötig werden, gilt es zu entscheiden, ob sich eine Integration in die **Persistence API** anbietet, oder ob es vorteilhafter ist diese in eine eigene API zu fassen.
+
+APIs die Daten in Datenbanken schreiben, sollten in die Persistence API mit aufgenommen werden.
+Alle weiteren APIs sollten eigenständige APIs darstellen  - z.B. die auf der Roadmap stehenden **Messagebus API** und **FileUpload API**.
 
 ### Paketzuschnitt
 
