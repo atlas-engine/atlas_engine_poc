@@ -1,130 +1,138 @@
-import {
-  FlowNode,
-  FlowNodeInstance,
-  FlowNodeInstanceState,
-  IFlowNodeInstanceRepository,
-  IFlowNodeInstanceService,
-  ProcessToken,
-} from '@process-engine/flow_node_instance.contracts';
-
 import {IIAMService} from '@essential-projects/iam_contracts';
 
-export class FlowNodeInstanceService implements IFlowNodeInstanceService {
+import {Repositories, Services, Types} from '@process-engine/persistence_api.contracts';
 
-  private readonly flowNodeInstanceRepository: IFlowNodeInstanceRepository;
+export class FlowNodeInstanceService implements Services.IFlowNodeInstanceService {
+
+  private readonly flowNodeInstanceRepository: Repositories.IFlowNodeInstanceRepository;
   private readonly iamService: IIAMService;
 
-  constructor(flowNodeInstanceRepository: IFlowNodeInstanceRepository, iamService: IIAMService) {
+  constructor(flowNodeInstanceRepository: Repositories.IFlowNodeInstanceRepository, iamService: IIAMService) {
     this.flowNodeInstanceRepository = flowNodeInstanceRepository;
     this.iamService = iamService;
   }
 
-  public async querySpecificFlowNode(correlationId: string, processModelId: string, flowNodeId: string): Promise<FlowNodeInstance> {
+  public async querySpecificFlowNode(
+    correlationId: string,
+    processModelId: string,
+    flowNodeId: string,
+  ): Promise<Types.FlowNodeInstance.FlowNodeInstance> {
     return this.flowNodeInstanceRepository.querySpecificFlowNode(correlationId, processModelId, flowNodeId);
   }
 
-  public async queryByFlowNodeId(flowNodeId: string): Promise<Array<FlowNodeInstance>> {
+  public async queryByFlowNodeId(flowNodeId: string): Promise<Array<Types.FlowNodeInstance.FlowNodeInstance>> {
     return this.flowNodeInstanceRepository.queryByFlowNodeId(flowNodeId);
   }
 
-  public async queryByInstanceId(instanceId: string): Promise<FlowNodeInstance> {
+  public async queryByInstanceId(instanceId: string): Promise<Types.FlowNodeInstance.FlowNodeInstance> {
     return this.flowNodeInstanceRepository.queryByInstanceId(instanceId);
   }
 
-  public async queryByCorrelation(correlationId: string): Promise<Array<FlowNodeInstance>> {
+  public async queryByCorrelation(correlationId: string): Promise<Array<Types.FlowNodeInstance.FlowNodeInstance>> {
     return this.flowNodeInstanceRepository.queryByCorrelation(correlationId);
   }
 
-  public async queryByProcessModel(processModelId: string): Promise<Array<FlowNodeInstance>> {
+  public async queryByProcessModel(processModelId: string): Promise<Array<Types.FlowNodeInstance.FlowNodeInstance>> {
     return this.flowNodeInstanceRepository.queryByProcessModel(processModelId);
   }
 
-  public async queryByCorrelationAndProcessModel(correlationId: string, processModelId: string): Promise<Array<FlowNodeInstance>> {
+  public async queryByCorrelationAndProcessModel(
+    correlationId: string,
+    processModelId: string,
+  ): Promise<Array<Types.FlowNodeInstance.FlowNodeInstance>> {
     return this.flowNodeInstanceRepository.queryByCorrelationAndProcessModel(correlationId, processModelId);
   }
 
-  public async queryByProcessInstance(processInstanceId: string): Promise<Array<FlowNodeInstance>> {
+  public async queryByProcessInstance(processInstanceId: string): Promise<Array<Types.FlowNodeInstance.FlowNodeInstance>> {
     return this.flowNodeInstanceRepository.queryByProcessInstance(processInstanceId);
   }
 
-  public async queryByState(state: FlowNodeInstanceState): Promise<Array<FlowNodeInstance>> {
+  public async queryByState(state: Types.FlowNodeInstance.FlowNodeInstanceState): Promise<Array<Types.FlowNodeInstance.FlowNodeInstance>> {
     return this.flowNodeInstanceRepository.queryByState(state);
   }
 
-  public async queryActive(): Promise<Array<FlowNodeInstance>> {
+  public async queryActive(): Promise<Array<Types.FlowNodeInstance.FlowNodeInstance>> {
     return this.flowNodeInstanceRepository.queryActive();
   }
 
-  public async queryActiveByProcessInstance(processInstanceId: string): Promise<Array<FlowNodeInstance>> {
+  public async queryActiveByProcessInstance(processInstanceId: string): Promise<Array<Types.FlowNodeInstance.FlowNodeInstance>> {
     return this.flowNodeInstanceRepository.queryActiveByProcessInstance(processInstanceId);
   }
 
   public async queryActiveByCorrelationAndProcessModel(
     correlationId: string,
     processModelId: string,
-  ): Promise<Array<FlowNodeInstance>> {
+  ): Promise<Array<Types.FlowNodeInstance.FlowNodeInstance>> {
     return this.flowNodeInstanceRepository.queryActiveByCorrelationAndProcessModel(correlationId, processModelId);
   }
 
-  public async querySuspendedByCorrelation(correlationId: string): Promise<Array<FlowNodeInstance>> {
+  public async querySuspendedByCorrelation(correlationId: string): Promise<Array<Types.FlowNodeInstance.FlowNodeInstance>> {
     return this.flowNodeInstanceRepository.querySuspendedByCorrelation(correlationId);
   }
 
-  public async querySuspendedByProcessModel(processModelId: string): Promise<Array<FlowNodeInstance>> {
+  public async querySuspendedByProcessModel(processModelId: string): Promise<Array<Types.FlowNodeInstance.FlowNodeInstance>> {
     return this.flowNodeInstanceRepository.querySuspendedByProcessModel(processModelId);
   }
 
-  public async querySuspendedByProcessInstance(processInstanceId: string): Promise<Array<FlowNodeInstance>> {
+  public async querySuspendedByProcessInstance(processInstanceId: string): Promise<Array<Types.FlowNodeInstance.FlowNodeInstance>> {
     return this.flowNodeInstanceRepository.querySuspendedByProcessInstance(processInstanceId);
   }
 
-  public async queryProcessTokensByProcessInstanceId(processInstanceId: string): Promise<Array<ProcessToken>> {
+  public async queryProcessTokensByProcessInstanceId(processInstanceId: string): Promise<Array<Types.FlowNodeInstance.ProcessToken>> {
     return this.flowNodeInstanceRepository.queryProcessTokensByProcessInstanceId(processInstanceId);
   }
 
   public async persistOnEnter(
-    flowNode: FlowNode,
+    flowNode: Types.ProcessModel.Base.FlowNode,
     flowNodeInstanceId: string,
-    token: ProcessToken,
+    token: Types.FlowNodeInstance.ProcessToken,
     previousFlowNodeInstanceId: string,
-  ): Promise<FlowNodeInstance> {
+  ): Promise<Types.FlowNodeInstance.FlowNodeInstance> {
 
     return this.flowNodeInstanceRepository.persistOnEnter(flowNode, flowNodeInstanceId, token, previousFlowNodeInstanceId);
   }
 
   public async persistOnExit(
-    flowNode: FlowNode,
+    flowNode: Types.ProcessModel.Base.FlowNode,
     flowNodeInstanceId: string,
-    token: ProcessToken,
-  ): Promise<FlowNodeInstance> {
+    token: Types.FlowNodeInstance.ProcessToken,
+  ): Promise<Types.FlowNodeInstance.FlowNodeInstance> {
 
     return this.flowNodeInstanceRepository.persistOnExit(flowNode, flowNodeInstanceId, token);
   }
 
   public async persistOnError(
-    flowNode: FlowNode,
+    flowNode: Types.ProcessModel.Base.FlowNode,
     flowNodeInstanceId: string,
-    token: ProcessToken,
+    token: Types.FlowNodeInstance.ProcessToken,
     error: Error,
-  ): Promise<FlowNodeInstance> {
+  ): Promise<Types.FlowNodeInstance.FlowNodeInstance> {
 
     return this.flowNodeInstanceRepository.persistOnError(flowNode, flowNodeInstanceId, token, error);
   }
 
   public async persistOnTerminate(
-    flowNode: FlowNode,
+    flowNode: Types.ProcessModel.Base.FlowNode,
     flowNodeInstanceId: string,
-    token: ProcessToken,
-  ): Promise<FlowNodeInstance> {
+    token: Types.FlowNodeInstance.ProcessToken,
+  ): Promise<Types.FlowNodeInstance.FlowNodeInstance> {
 
     return this.flowNodeInstanceRepository.persistOnTerminate(flowNode, flowNodeInstanceId, token);
   }
 
-  public async suspend(flowNodeId: string, flowNodeInstanceId: string, token: ProcessToken): Promise<FlowNodeInstance> {
+  public async suspend(
+    flowNodeId: string,
+    flowNodeInstanceId: string,
+    token: Types.FlowNodeInstance.ProcessToken,
+  ): Promise<Types.FlowNodeInstance.FlowNodeInstance> {
     return this.flowNodeInstanceRepository.suspend(flowNodeId, flowNodeInstanceId, token);
   }
 
-  public async resume(flowNodeId: string, flowNodeInstanceId: string, token: ProcessToken): Promise<FlowNodeInstance> {
+  public async resume(
+    flowNodeId: string,
+    flowNodeInstanceId: string,
+    token: Types.FlowNodeInstance.ProcessToken,
+  ): Promise<Types.FlowNodeInstance.FlowNodeInstance> {
     return this.flowNodeInstanceRepository.resume(flowNodeId, flowNodeInstanceId, token);
   }
 

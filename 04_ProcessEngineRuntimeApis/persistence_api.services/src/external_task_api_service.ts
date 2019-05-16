@@ -2,28 +2,18 @@
 import * as moment from 'moment';
 
 import * as EssentialProjectErrors from '@essential-projects/errors_ts';
-import {IEventAggregator, Subscription} from '@essential-projects/event_aggregator_contracts';
 import {IIAMService, IIdentity} from '@essential-projects/iam_contracts';
 
-import {
-  ExternalTask,
-  ExternalTaskErrorMessage,
-  ExternalTaskState,
-  ExternalTaskSuccessMessage,
-  IExternalTaskApi,
-  IExternalTaskRepository,
-} from '@process-engine/external_task_api_contracts';
+import {Repositories, Services, Types} from '@process-engine/persistence_api.contracts';
 
-export class ExternalTaskApiService implements IExternalTaskApi {
+export class ExternalTaskApiService implements Services.IExternalTaskService {
 
-  private readonly eventAggregator: IEventAggregator;
-  private readonly externalTaskRepository: IExternalTaskRepository;
+  private readonly externalTaskRepository: Repositories.IExternalTaskRepository;
   private readonly iamService: IIAMService;
 
   private readonly canAccessExternalTasksClaim: string = 'can_access_external_tasks';
 
-  constructor(eventAggregator: IEventAggregator, externalTaskRepository: IExternalTaskRepository, iamService: IIAMService) {
-    this.eventAggregator = eventAggregator;
+  constructor(externalTaskRepository: Repositories.IExternalTaskRepository, iamService: IIAMService) {
     this.externalTaskRepository = externalTaskRepository;
     this.iamService = iamService;
   }
@@ -35,17 +25,19 @@ export class ExternalTaskApiService implements IExternalTaskApi {
     maxTasks: number,
     longPollingTimeout: number,
     lockDuration: number,
-  ): Promise<Array<ExternalTask<TPayload>>> {
+  ): Promise<Array<Types.ExternalTask.ExternalTask<TPayload>>> {
 
     await this.iamService.ensureHasClaim(identity, this.canAccessExternalTasksClaim);
 
-    const tasks = await this.fetchOrWaitForExternalTasks<TPayload>(topicName, maxTasks, longPollingTimeout);
+    const tasks = await this.externalTaskRepository.fetchAvailableForProcessing<TPayload>(topicName, maxTasks);
 
     const lockExpirationTime = this.getLockExpirationDate(lockDuration);
 
-    const lockedTasks = await Promise.map(tasks, async (externalTask: ExternalTask<TPayload>): Promise<ExternalTask<TPayload>> => {
-      return this.lockExternalTask<TPayload>(externalTask, workerId, lockExpirationTime);
-    });
+    const lockedTasks =
+      // eslint-disable-next-line max-len
+      await Promise.map(tasks, async (externalTask: Types.ExternalTask.ExternalTask<TPayload>): Promise<Types.ExternalTask.ExternalTask<TPayload>> => {
+        return this.lockExternalTask<TPayload>(externalTask, workerId, lockExpirationTime);
+      });
 
     return lockedTasks;
   }
@@ -76,10 +68,6 @@ export class ExternalTaskApiService implements IExternalTaskApi {
     const error = new EssentialProjectErrors.InternalServerError(`ExternalTask failed due to BPMN error with code ${errorCode}`);
 
     await this.externalTaskRepository.finishWithError(externalTaskId, error);
-
-    const errorNotificationPayload = new ExternalTaskErrorMessage(error);
-
-    this.publishExternalTaskFinishedMessage(externalTask, errorNotificationPayload);
   }
 
   public async handleServiceError(
@@ -101,10 +89,6 @@ export class ExternalTaskApiService implements IExternalTaskApi {
     error.additionalInformation = errorDetails;
 
     await this.externalTaskRepository.finishWithError(externalTaskId, error);
-
-    const errorNotificationPayload = new ExternalTaskErrorMessage(error);
-
-    this.publishExternalTaskFinishedMessage(externalTask, errorNotificationPayload);
   }
 
   public async finishExternalTask<TResultType>(
@@ -122,54 +106,13 @@ export class ExternalTaskApiService implements IExternalTaskApi {
     this.ensureExternalTaskCanBeAccessedByWorker(externalTask, externalTaskId, workerId);
 
     await this.externalTaskRepository.finishWithSuccess<TResultType>(externalTaskId, payload);
-
-    const successNotificationPayload = new ExternalTaskSuccessMessage(payload);
-
-    this.publishExternalTaskFinishedMessage(externalTask, successNotificationPayload);
-  }
-
-  private async fetchOrWaitForExternalTasks<TPayload>(
-    topicName: string,
-    maxTasks: number,
-    longPollingTimeout: number,
-  ): Promise<Array<ExternalTask<TPayload>>> {
-
-    // eslint-disable-next-line consistent-return
-    return new Promise<Array<ExternalTask<TPayload>>>(async (resolve: Function): Promise<void> => {
-
-      const tasks = await this.externalTaskRepository.fetchAvailableForProcessing<TPayload>(topicName, maxTasks);
-
-      const taskAreNotEmpty: boolean = tasks.length > 0;
-
-      if (taskAreNotEmpty) {
-        return resolve(tasks);
-      }
-
-      let subscription: Subscription;
-
-      const timeout = setTimeout((): void => {
-        this.eventAggregator.unsubscribe(subscription);
-
-        return resolve([]);
-      }, longPollingTimeout);
-
-      const externalTaskCreatedEventName = `/externaltask/topic/${topicName}/created`;
-      subscription = this.eventAggregator.subscribeOnce(externalTaskCreatedEventName, async (): Promise<void> => {
-
-        clearTimeout(timeout);
-
-        const availableTasks = await this.externalTaskRepository.fetchAvailableForProcessing<TPayload>(topicName, maxTasks);
-
-        return resolve(availableTasks);
-      });
-    });
   }
 
   private async lockExternalTask<TPayload>(
-    externalTask: ExternalTask<TPayload>,
+    externalTask: Types.ExternalTask.ExternalTask<TPayload>,
     workerId: string,
     lockExpirationTime: Date,
-  ): Promise<ExternalTask<TPayload>> {
+  ): Promise<Types.ExternalTask.ExternalTask<TPayload>> {
 
     await this.externalTaskRepository.lockForWorker(workerId, externalTask.id, lockExpirationTime);
 
@@ -179,14 +122,18 @@ export class ExternalTaskApiService implements IExternalTaskApi {
     return externalTask;
   }
 
-  private ensureExternalTaskCanBeAccessedByWorker<TPayload>(externalTask: ExternalTask<TPayload>, externalTaskId: string, workerId: string): void {
+  private ensureExternalTaskCanBeAccessedByWorker<TPayload>(
+    externalTask: Types.ExternalTask.ExternalTask<TPayload>,
+    externalTaskId: string,
+    workerId: string,
+  ): void {
 
     const externalTaskDoesNotExist = !externalTask;
     if (externalTaskDoesNotExist) {
       throw new EssentialProjectErrors.NotFoundError(`External Task with ID '${externalTaskId}' not found.`);
     }
 
-    const externalTaskIsAlreadyFinished = externalTask.state === ExternalTaskState.finished;
+    const externalTaskIsAlreadyFinished = externalTask.state === Types.ExternalTask.ExternalTaskState.finished;
     if (externalTaskIsAlreadyFinished) {
       throw new EssentialProjectErrors.GoneError(`External Task with ID '${externalTaskId}' has been finished and is no longer accessible.`);
     }
@@ -212,20 +159,6 @@ export class ExternalTaskApiService implements IExternalTaskApi {
     return moment()
       .add(duration, 'milliseconds')
       .toDate();
-  }
-
-  /**
-   * Publishes a message to the EventAggregator, which notifies about a finished
-   * ExternalTask.
-   *
-   * @param externalTask The ExternalTask for which to publish a notification.
-   * @param result       The result of the ExternalTask's execution.
-   */
-  private publishExternalTaskFinishedMessage(externalTask: ExternalTask<any>, result: any): void {
-
-    const externalTaskFinishedEventName = `/externaltask/flownodeinstance/${externalTask.flowNodeInstanceId}/finished`;
-
-    this.eventAggregator.publish(externalTaskFinishedEventName, result);
   }
 
 }

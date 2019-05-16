@@ -2,16 +2,7 @@ import {IIAMService, IIdentity} from '@essential-projects/iam_contracts';
 
 import {NotFoundError} from '@essential-projects/errors_ts';
 
-import {
-  Correlation,
-  CorrelationFromRepository,
-  CorrelationProcessInstance,
-  CorrelationState,
-  ICorrelationRepository,
-  ICorrelationService,
-} from '@process-engine/correlation.contracts';
-
-import {IProcessDefinitionRepository} from '@process-engine/process_model.contracts';
+import {Repositories, Services, Types} from '@process-engine/persistence_api.contracts';
 
 /**
  * Groups ProcessModelHashes by their associated CorrelationId.
@@ -19,22 +10,22 @@ import {IProcessDefinitionRepository} from '@process-engine/process_model.contra
  * Only use internally.
  */
 type GroupedCorrelations = {
-  [correlationId: string]: Array<CorrelationFromRepository>;
+  [correlationId: string]: Array<Types.Correlation.CorrelationFromRepository>;
 };
 
 const canReadProcessModelClaim = 'can_read_process_model';
 const canDeleteProcessModel = 'can_delete_process_model';
 
-export class CorrelationService implements ICorrelationService {
+export class CorrelationService implements Services.ICorrelationService {
 
-  private readonly correlationRepository: ICorrelationRepository;
+  private readonly correlationRepository: Repositories.ICorrelationRepository;
   private readonly iamService: IIAMService;
-  private readonly processDefinitionRepository: IProcessDefinitionRepository;
+  private readonly processDefinitionRepository: Repositories.IProcessDefinitionRepository;
 
   constructor(
-    correlationRepository: ICorrelationRepository,
+    correlationRepository: Repositories.ICorrelationRepository,
     iamService: IIAMService,
-    processDefinitionRepository: IProcessDefinitionRepository,
+    processDefinitionRepository: Repositories.IProcessDefinitionRepository,
   ) {
 
     this.correlationRepository = correlationRepository;
@@ -55,43 +46,43 @@ export class CorrelationService implements ICorrelationService {
       .createEntry(identity, correlationId, processInstanceId, processModelId, processModelHash, parentProcessInstanceId);
   }
 
-  public async getActive(identity: IIdentity): Promise<Array<Correlation>> {
+  public async getActive(identity: IIdentity): Promise<Array<Types.Correlation.Correlation>> {
     await this.iamService.ensureHasClaim(identity, canReadProcessModelClaim);
 
-    const activeCorrelationsFromRepo = await this.correlationRepository.getCorrelationsByState(CorrelationState.running);
+    const activeCorrelationsFromRepo = await this.correlationRepository.getCorrelationsByState(Types.Correlation.CorrelationState.running);
 
     const filteredCorrelationsFromRepo = this.filterCorrelationsFromRepoByIdentity(identity, activeCorrelationsFromRepo);
 
-    const activeCorrelationsForIdentity = await this.mapCorrelationList(filteredCorrelationsFromRepo);
+    const activeCorrelationsForIdentity = await this.mapCorrelations(filteredCorrelationsFromRepo);
 
     return activeCorrelationsForIdentity;
   }
 
-  public async getAll(identity: IIdentity): Promise<Array<Correlation>> {
+  public async getAll(identity: IIdentity): Promise<Array<Types.Correlation.Correlation>> {
     await this.iamService.ensureHasClaim(identity, canReadProcessModelClaim);
 
     const correlationsFromRepo = await this.correlationRepository.getAll();
 
     const filteredCorrelationsFromRepo = this.filterCorrelationsFromRepoByIdentity(identity, correlationsFromRepo);
 
-    const correlations = await this.mapCorrelationList(filteredCorrelationsFromRepo);
+    const correlations = await this.mapCorrelations(filteredCorrelationsFromRepo);
 
     return correlations;
   }
 
-  public async getByProcessModelId(identity: IIdentity, processModelId: string): Promise<Array<Correlation>> {
+  public async getByProcessModelId(identity: IIdentity, processModelId: string): Promise<Array<Types.Correlation.Correlation>> {
     await this.iamService.ensureHasClaim(identity, canReadProcessModelClaim);
 
     const correlationsFromRepo = await this.correlationRepository.getByProcessModelId(processModelId);
 
     const filteredCorrelationsFromRepo = this.filterCorrelationsFromRepoByIdentity(identity, correlationsFromRepo);
 
-    const correlations = await this.mapCorrelationList(filteredCorrelationsFromRepo);
+    const correlations = await this.mapCorrelations(filteredCorrelationsFromRepo);
 
     return correlations;
   }
 
-  public async getByCorrelationId(identity: IIdentity, correlationId: string): Promise<Correlation> {
+  public async getByCorrelationId(identity: IIdentity, correlationId: string): Promise<Types.Correlation.Correlation> {
     await this.iamService.ensureHasClaim(identity, canReadProcessModelClaim);
 
     // NOTE:
@@ -111,7 +102,7 @@ export class CorrelationService implements ICorrelationService {
     return correlation;
   }
 
-  public async getByProcessInstanceId(identity: IIdentity, processInstanceId: string): Promise<Correlation> {
+  public async getByProcessInstanceId(identity: IIdentity, processInstanceId: string): Promise<Types.Correlation.Correlation> {
     await this.iamService.ensureHasClaim(identity, canReadProcessModelClaim);
 
     const correlationFromRepo = await this.correlationRepository.getByProcessInstanceId(processInstanceId);
@@ -121,7 +112,7 @@ export class CorrelationService implements ICorrelationService {
     return correlation;
   }
 
-  public async getSubprocessesForProcessInstance(identity: IIdentity, processInstanceId: string): Promise<Correlation> {
+  public async getSubprocessesForProcessInstance(identity: IIdentity, processInstanceId: string): Promise<Types.Correlation.Correlation> {
     await this.iamService.ensureHasClaim(identity, canReadProcessModelClaim);
 
     const correlationsFromRepo = await this.correlationRepository.getSubprocessesForProcessInstance(processInstanceId);
@@ -160,10 +151,10 @@ export class CorrelationService implements ICorrelationService {
 
   private filterCorrelationsFromRepoByIdentity(
     identity: IIdentity,
-    correlationsFromRepo: Array<CorrelationFromRepository>,
-  ): Array<CorrelationFromRepository> {
+    correlationsFromRepo: Array<Types.Correlation.CorrelationFromRepository>,
+  ): Array<Types.Correlation.CorrelationFromRepository> {
 
-    return correlationsFromRepo.filter((correlationFromRepo: CorrelationFromRepository): boolean => {
+    return correlationsFromRepo.filter((correlationFromRepo: Types.Correlation.CorrelationFromRepository): boolean => {
       // Correlations that were created with the dummy token are visible to everybody.
       const isDummyToken = correlationFromRepo.identity.userId === 'dummy_token';
       const userIdsMatch = identity.userId === correlationFromRepo.identity.userId;
@@ -172,20 +163,12 @@ export class CorrelationService implements ICorrelationService {
     });
   }
 
-  /**
-   * Maps a given List of CorrelationFromRepository objects into a List of
-   * Runtime Correlation objects.
-   *
-   * @async
-   * @param   correlationsFromRepo The Correlations to map.
-   * @returns                      The mapped Correlation.
-   */
-  private async mapCorrelationList(correlationsFromRepo: Array<CorrelationFromRepository>): Promise<Array<Correlation>> {
-    const groupedCorrelations = this.groupCorrelations(correlationsFromRepo);
+  private async mapCorrelations(correlationList: Array<Types.Correlation.CorrelationFromRepository>): Promise<Array<Types.Correlation.Correlation>> {
+    const groupedCorrelations = this.groupCorrelations(correlationList);
 
     const uniqueCorrelationIds = Object.keys(groupedCorrelations);
 
-    const mappedCorrelations: Array<Correlation> = [];
+    const mappedCorrelations: Array<Types.Correlation.Correlation> = [];
 
     for (const correlationId of uniqueCorrelationIds) {
       const matchingCorrelationEntries = groupedCorrelations[correlationId];
@@ -197,14 +180,7 @@ export class CorrelationService implements ICorrelationService {
     return mappedCorrelations;
   }
 
-  /**
-   * Takes a list of CorrelationFromRepository objects and groups them by their
-   * CorrelationId.
-   *
-   * @param   correlations The Correlations to group.
-   * @returns              The grouped Correlations.
-   */
-  private groupCorrelations(correlations: Array<CorrelationFromRepository>): GroupedCorrelations {
+  private groupCorrelations(correlations: Array<Types.Correlation.CorrelationFromRepository>): GroupedCorrelations {
 
     const groupedCorrelations: GroupedCorrelations = {};
 
@@ -222,21 +198,12 @@ export class CorrelationService implements ICorrelationService {
     return groupedCorrelations;
   }
 
-  /**
-   * Maps a given list of CorrelationFromRepository objects into a,
-   * Correlation object, using the given CorrelationId as a base.
-   *
-   * @async
-   * @param   correlationId           The ID of the Correlation to map.
-   * @param   correlationEntriess     The list of entries to map.
-   * @returns                         The mapped Correlation.
-   */
   private async mapCorrelation(
     correlationId: string,
-    correlationsFromRepo?: Array<CorrelationFromRepository>,
-  ): Promise<Correlation> {
+    correlationsFromRepo?: Array<Types.Correlation.CorrelationFromRepository>,
+  ): Promise<Types.Correlation.Correlation> {
 
-    const parsedCorrelation = new Correlation();
+    const parsedCorrelation = new Types.Correlation.Correlation();
     parsedCorrelation.id = correlationId;
     parsedCorrelation.createdAt = correlationsFromRepo[0].createdAt;
 
@@ -250,20 +217,20 @@ export class CorrelationService implements ICorrelationService {
          * the correlation will always have a running state, no matter how many
          * "finished" instances there might be.
          */
-        parsedCorrelation.state = parsedCorrelation.state !== CorrelationState.running
+        parsedCorrelation.state = parsedCorrelation.state !== Types.Correlation.CorrelationState.running
           ? correlationFromRepo.state
-          : CorrelationState.running;
+          : Types.Correlation.CorrelationState.running;
 
         const correlationEntryHasErrorAttached = !correlationFromRepo.error;
 
         if (correlationEntryHasErrorAttached) {
-          parsedCorrelation.state = CorrelationState.error;
+          parsedCorrelation.state = Types.Correlation.CorrelationState.error;
           parsedCorrelation.error = correlationFromRepo.error;
         }
 
         const processDefinition = await this.processDefinitionRepository.getByHash(correlationFromRepo.processModelHash);
 
-        const processModel = new CorrelationProcessInstance();
+        const processModel = new Types.Correlation.CorrelationProcessInstance();
         processModel.processDefinitionName = processDefinition.name;
         processModel.xml = processDefinition.xml;
         processModel.hash = correlationFromRepo.processModelHash;

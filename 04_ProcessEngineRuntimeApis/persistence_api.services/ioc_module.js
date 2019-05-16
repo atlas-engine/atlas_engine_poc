@@ -2,7 +2,7 @@ const {
   CorrelationService,
   ExternalTaskApiService,
   FlowNodeInstanceService,
-  ProcessModelService,
+  ProcessDefinitionService,
 } = require('./dist/commonjs/index');
 
 function registerInContainer(container) {
@@ -13,14 +13,14 @@ function registerInContainer(container) {
 
   container
     .register('ExternalTaskApiService', ExternalTaskApiService)
-    .dependencies('EventAggregator', 'ExternalTaskRepository', 'IamService');
+    .dependencies('ExternalTaskRepository', 'IamService');
 
   container
     .register('FlowNodeInstanceService', FlowNodeInstanceService)
     .dependencies('FlowNodeInstanceRepository', 'IamService');
 
   container
-    .register('ProcessModelService', ProcessModelService)
+    .register('ProcessDefinitionService', ProcessDefinitionService)
     .dependencies('BpmnModelParser', 'IamService', 'ProcessDefinitionRepository');
 }
 

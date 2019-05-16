@@ -23,7 +23,7 @@
   "dependencies": {
     "@essential-projects/errors_ts": "^1.4.3",
     "@essential-projects/iam_contracts": "^3.4.0",
-    "@process-engine/persistence_api.contracts": "^2.0.0",
+    "@process-engine/persistence_api.contracts": "feature~architecture_refactoring_poc",
     "moment": "^2.24.0"
   },
   "devDependencies": {
