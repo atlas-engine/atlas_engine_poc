@@ -1,10 +1,6 @@
-# ProcessEngine Architektur Refactoring PoC
+# AtlasEngine.ts PoC
 
-Dieses Repository soll anhand eines kleine PoCs veranschaulichen, wie die künftige Struktur der ProcessEngine aussehen wird.
-
-## Zusammenfassung
-
-Konzept für die Umstrukturierung der ProcessEngine.ts nach dem Onion Modell; Zusammenlegen von Github Repositories und npm Paketen.
+Dieses Repository soll die Struktur der ProcessEngine veranschaulichen, nachdem sie zur AtlasEngine portiert wurde.
 
 ## Motivation
 
@@ -26,9 +22,10 @@ Das, zusammen mit der Tatsache, dass jeder Layer jedes Microservices ein eigenes
 
 Zuletzt soll die Namensgebung der öffentlichen APIs überdacht werden.
 Es sollen Namen gefunden werden, die bereits im Vorfeld klar ausdrücken, wozu diese API eigentlich gut sein soll.
-Kein Außenstehender versteht auf Anhieb, was eigentlich eine Consumer API sein soll, ohne dass man es Erklären muss. Würde diese API nun aber einfach **ProcessEngine API** heißen, kann man schon aus dem Namen heraus ableiten, dass diese API benutzt wird um mit der ProcessEngine zu kommunizieren um Prozesse auszuführen (was ja genau der Einsatzzweck der jetzigen Consumer API ist).
+Kein Außenstehender versteht auf Anhieb, was eigentlich eine Consumer API sein soll, ohne dass man es erklären muss. Würde diese API nun aber einfach **ProcessEngine API** heißen, kann man schon aus dem Namen heraus ableiten, dass diese API benutzt wird um mit der ProcessEngine zu kommunizieren um Prozesse auszuführen (was ja genau der Einsatzzweck der jetzigen Consumer API ist).
+Aus diesem Grund würd diese API künftig den Namen ***AtlasEngine API** tragen.
 
-Gleiches gilt für die Management API, die den namen **ProcessEngine Admin API** erhalten soll.
+Gleiches gilt für die Management API, die den Namen **AtlasEngine Admin API** erhält.
 
 Schaut man sich andere APIs, wie z.B. von Twitter, Facebook, etc. an, erkennt man ohnehin schnell, dass es üblich ist öffentliche APIs nach dem Produkt zu benennen, für welches sie geschrieben wurden.
 Es besteht kein Grund, weshalb wir das nicht genauso machen sollten.
@@ -37,7 +34,7 @@ Es besteht kein Grund, weshalb wir das nicht genauso machen sollten.
 
 ### Zusammenfassung
 
-Folgendes Schaubild soll die künftige Architektur veranschaulichen:
+Folgendes Schaubild soll die künftige Architektur der AtlasEngine.ts veranschaulichen:
 
 ![ApiStructureCurrent](./images/ApiStructureNew.png)
 
@@ -49,9 +46,9 @@ Alle anderen Komponenten werden um den Core herum gebildet und entsprechend zuge
 
 ### Public APIs
 
-Es wird 2 öffentliche APIs für den Zugriff auf die ProcessEngine geben:
+Es wird 2 öffentliche APIs für den Zugriff auf die AtlasEngine geben:
 
-1. **ProcessEngine API** (ehemals Consumer API):
+1. **AtlasEngine API** (ehemals Consumer API):
 
 - Erlaubt das Abfragen und Ausführen von Prozessmodellen
 - Erlaubt das Abfragen von Ergebnissen von Prozessinstanzen
@@ -60,7 +57,7 @@ Es wird 2 öffentliche APIs für den Zugriff auf die ProcessEngine geben:
 - Erlaubt es Signale und Messages zu senden
 - Evtl. auch Handling von untypisierten Activities (muss noch geklärt werden)
 
-2. **ProcessEngine Admin API** (ehemals Management API):
+1. **AtlasEngine Admin API** (ehemals Management API):
 
 - Beinhaltet lediglich administrative Aufgaben
 - Deployed & Löscht Prozessmodelle
@@ -80,26 +77,26 @@ Der interne Zuschnitt dieser APIs kann durchaus auf mehrere Klassen aufgeteilt w
 
 Was die API Clients betrifft, so ergeben sich folgende Änderungen:
 
-ConsumerApiClient und ExternalTaskApiClient werden zum ProcessEngineClient zusammengefasst.
+ConsumerApiClient und ExternalTaskApiClient werden zum AtlasEngineClient zusammengefasst.
 
-Der ManagementApiClient wird in ProcessEngineAdminClient umbenannt und behält seine bisherigen Funktionalitäten bei.
+Der ManagementApiClient wird in AtlasEngineAdminClient umbenannt und behält seine bisherigen Funktionalitäten bei.
 
 Die Accessors für beide Clients werden ersatzlos abgeschafft.
 Stattdessen wird es jeweils zwei separate Clients geben:
 
-- Einen für den Zugriff auf eine in die Anwendung integrierte ProcessEngine
-- Einen für den Zugriff auf eine externe ProcessEngine per HTTP
+- Einen für den Zugriff auf eine in die Anwendung integrierte AtlasEngine
+- Einen für den Zugriff auf eine externe AtlasEngine per HTTP
 
-Der Client für externe ProcessEngines sollte zudem selbst dafür sorgen, dass der von ihm benötigte HttpClient korrekt initialisiert wird.
-Bisher wird erwartet, dass ein vollständig initialisierter HttpClient per IoC injected wird. Das ist jedoch wenig Benutzerfreundlich, nicht zuletzt auch deswegen, da so ein doppelter Pflegeaufwand für die Config betrieben werden muss (eine Config für den ProcessEngineClient und eine für den HttpClient).
+Der Client für externe AtlasEngines sollte zudem selbst dafür sorgen, dass der von ihm benötigte HttpClient korrekt initialisiert wird.
+Bisher wird erwartet, dass ein vollständig initialisierter HttpClient per IoC injected wird. Das ist jedoch wenig Benutzerfreundlich, nicht zuletzt auch deswegen, da so ein doppelter Pflegeaufwand für die Config betrieben werden muss (eine Config für den AtlasEngineClient und eine für den HttpClient).
 
-Ursprünglich sollten die Accessors dabei behilflich sein, Änderungen in einer externen Anwendung auf ein Minimum zu reduzieren, falls sich die Art und Weise ändert in welcher diese mit einer ProcessEngine kommuniziert.
+Ursprünglich sollten die Accessors dabei behilflich sein, Änderungen in einer externen Anwendung auf ein Minimum zu reduzieren, falls sich die Art und Weise ändert in welcher diese mit einer AtlasEngine kommuniziert.
 
-Das Konzept hat sich jedoch in der Praxis nicht bewährt und wird nun entsprechend erneuert.
+Das Konzept hat sich jedoch in der Praxis nicht bewährt und wird nun entsprechend angepasst.
 
-### ProcessEngine Core
+### AtlasEngine Core
 
-Der Process Engine Core bildet das Herzstück des Ganzen und erfüllt folgende Aufgaben:
+Der AtlasEngine Core bildet das Herzstück des Ganzen und erfüllt folgende Aufgaben:
 Ausführung von Prozessmodellen
 Im Rahmen dessen werden auch Metriken und Logs generiert und an entsprechende APIs aus der Runtime zur Verarbeitung weitergereicht
 Bereitstellen von Contracts für die öffentlichen APIs und die Runtime Komponenten
@@ -119,7 +116,7 @@ Die bestehenden Runtime APIs werden wie folgt zusammengeführt:
 
 Da Logs und Metriken bevorzugt in Dateien auf dem lokalen Dateisystem abgelegt und in der Regel nach dem “Fire & Forget” Prinzip generiert werden, würde ich es nicht für richtig erachten, diese mit in die Persistence API zu integrieren.
 
-Die Datenbank orientierten APis können zu einer API zusammengefasst werden, da es sehr unwahrscheinlich ist, dass wir jemals eine ProcessEngine releasen werden, die **nicht** die gesamte Persistenzschicht bereitstellt. Auf der anderen Seite reduziert eine Zusammenlegung der APIs den Pflegeaufwand jedoch erheblich.
+Die Datenbank orientierten APis können zu einer API zusammengefasst werden, da es sehr unwahrscheinlich ist, dass wir jemals eine AtlasEngine releasen werden, die **nicht** die gesamte Persistenzschicht bereitstellt. Auf der anderen Seite reduziert eine Zusammenlegung der APIs den Pflegeaufwand jedoch erheblich.
 
 Ebenfalls sollen die Funktionen der Persistence API auf das wesentliche reduziert werden.
 Aktuell ist es noch so, dass sämtliche UseCases, die von den der Consumer API und Management API benötigt werden, bis in den Persistence Layer durch programmiert wurden.
@@ -137,10 +134,10 @@ Alle weiteren APIs sollten eigenständige APIs darstellen  - z.B. die auf der Ro
 
 Auf GitHub wird es 4 Hauptrepositories geben:
 
-- ProcessEngineApi
-- ProcessEngineAdminAPi
-- ProcessEngineCore
-- ProcessEngineRuntime
+- AtlasEngineApi
+- AtlasEngineAdminAPi
+- AtlasEngineCore
+- AtlasEngineRuntime
 
 Die in diesen Repositories befindlichen APis werden den bei uns etablierten Standard Zuschnitt bekommen, sprich:
 
